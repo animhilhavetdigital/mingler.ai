@@ -244,17 +244,6 @@ export default function Home() {
           .to(".orbit-stage", { opacity: 0.18, scale: 2.3, duration: 0.32 }, 0.68)
           .to(".hero-transition-word", { opacity: 0, scale: 1.18, duration: 0.2 }, 0.86);
 
-        const dataStory = gsap.timeline({
-          scrollTrigger: { trigger: ".dark-section", start: "top 75%", end: "bottom 55%", scrub: 1 },
-        });
-        dataStory
-          .from(".dark-intro h2", { xPercent: -18, opacity: 0.08 }, 0)
-          .from(".dark-intro p", { xPercent: 35, opacity: 0 }, 0.06)
-          .from(".data-rail article", { y: 170, opacity: 0, stagger: 0.12 }, 0.12)
-          .fromTo(".rail-line i", { scaleX: 0 }, { scaleX: 1, transformOrigin: "left center" }, 0.12)
-          .from(".dark-quote", { y: 100, opacity: 0 }, 0.55)
-          .fromTo(".motion-phrase", { xPercent: 25 }, { xPercent: -30, ease: "none" }, 0.12);
-
         const questionCards = gsap.utils.toArray<HTMLElement>(".diagnostic-question");
         const diagnosticAnswer = document.querySelector<HTMLElement>(".diagnostic-answer");
         const diagnosticCount = document.querySelector<HTMLElement>(".diagnostic-count");
@@ -307,7 +296,7 @@ export default function Home() {
         };
         const setMosFullscreen = (active: boolean) => rootRef.current?.classList.toggle("mos-stage-active", active);
 
-        gsap.set(".flow-agent, .flow-trigger, .flow-wire, .flow-feedback, .human-gate, .flow-legend", { autoAlpha: 0 });
+        gsap.set(".flow-agent, .flow-trigger, .flow-wire, .flow-feedback, .flow-legend", { autoAlpha: 0 });
         gsap.set(".flow-agent", { y: 28, scale: 0.84 });
         gsap.set(".flow-wire-x", { scaleX: 0, transformOrigin: "left center" });
         gsap.set(".flow-wire-y", { scaleY: 0, transformOrigin: "top center" });
@@ -340,7 +329,6 @@ export default function Home() {
           .to(".flow-agent-branch", { autoAlpha: 1, y: 0, scale: 1, stagger: 0.18, duration: 0.36, ease: "back.out(1.25)" }, 2.62)
           .to(".wire-merge-spine", { autoAlpha: 1, scaleY: 1, duration: 0.4 }, 3.54)
           .to(".wire-merge", { autoAlpha: 1, scaleX: 1, stagger: 0.07, duration: 0.22 }, 3.68)
-          .to(".human-gate", { autoAlpha: 1, y: 0, duration: 0.28 }, 3.92)
           .to(".agent-publishing", { autoAlpha: 1, y: 0, scale: 1, duration: 0.44, ease: "back.out(1.35)" }, 4.04)
           .to(".wire-output", { autoAlpha: 1, scaleX: 1, duration: 0.3 }, 4.6)
           .to(".agent-performance", { autoAlpha: 1, y: 0, scale: 1, duration: 0.44, ease: "back.out(1.35)" }, 4.78)
@@ -443,7 +431,7 @@ export default function Home() {
           <span>mingler</span><b>.ai</b>
         </a>
         <nav className={menuOpen ? "nav-open" : ""} aria-label="Navigation principale">
-          <a href="#ecosysteme" onClick={() => setMenuOpen(false)}>Écosystème</a>
+          <a href="#diagnostic" onClick={() => setMenuOpen(false)}>Diagnostic</a>
           <a href="#mos" onClick={() => setMenuOpen(false)}>MOS</a>
           <a href="#iacrm" onClick={() => setMenuOpen(false)}>iACRM</a>
           <a href="#produits" onClick={() => setMenuOpen(false)}>Produits</a>
@@ -513,27 +501,7 @@ export default function Home() {
           </div>
         </div>
         <div className="hero-transition-word" aria-hidden="true"><small>UNE MÉMOIRE.</small><span>TOUT EST RELIÉ</span></div>
-        <a className="scroll-cue" href="#ecosysteme"><span /> Faire circuler la donnée</a>
-      </section>
-
-      <section className="dark-section" id="ecosysteme">
-        <div className="section-kicker"><span>P</span> Le problème invisible</div>
-        <div className="dark-intro gsap-reveal">
-          <h2>Vos outils savent.<br /><i>Séparément.</i></h2>
-          <p>La donnée existe. Mais à chaque relais, une partie de son origine, de son contexte ou de sa prochaine action disparaît.</p>
-        </div>
-        <div className="data-rail" aria-label="Les ruptures de l’histoire client">
-          <div className="rail-line"><i /></div>
-          <article><span>SOURCE</span><b>Un prospect arrive</b><p>Sa campagne et son premier signal deviennent vite un champ oublié.</p></article>
-          <article><span>RELAIS</span><b>Le marketing transmet</b><p>La vente reconstruit une histoire que l’entreprise connaît déjà.</p></article>
-          <article><span>TEMPO</span><b>Un signal apparaît</b><p>La relance attend qu’une personne le remarque et trouve le contexte.</p></article>
-          <article><span>APPRENTISSAGE</span><b>Le résultat tombe</b><p>La prochaine campagne recommence sans retenir toute la leçon.</p></article>
-        </div>
-        <div className="dark-quote">
-          <span>Le vrai problème</span>
-          <blockquote>Votre entreprise ne manque pas d’informations.<br />Elle manque d’une mémoire commerciale commune.</blockquote>
-        </div>
-        <div className="motion-phrase" aria-hidden="true">SIGNAL&nbsp;&nbsp; CONTEXTE&nbsp;&nbsp; DÉCISION&nbsp;&nbsp; ACTION</div>
+        <a className="scroll-cue" href="#diagnostic"><span /> Faire le test</a>
       </section>
 
       <section className="diagnostic-section" id="diagnostic" aria-labelledby="diagnostic-title">
@@ -627,7 +595,6 @@ export default function Home() {
                   </article>
                 ))}
 
-                <div className="human-gate"><span>✓</span><div><small>HUMAN GATE</small><strong>Validation avant diffusion</strong></div></div>
                 <div className="flow-legend"><span><i /> Signal transmis</span><span><i /> Boucle d’apprentissage</span></div>
               </div>
             </div>
@@ -734,7 +701,7 @@ export default function Home() {
           <span>mingler</span><b>.ai</b>
         </a>
         <p>L’intelligence qui relie acquisition, relation et croissance.</p>
-        <div><a href="#ecosysteme">Écosystème</a><a href="#mos">MOS</a><a href="#produits">Produits</a></div>
+        <div><a href="#diagnostic">Diagnostic</a><a href="#mos">MOS</a><a href="#produits">Produits</a></div>
         <span>© 2026 Mingler.ai</span>
       </footer>
     </main>
