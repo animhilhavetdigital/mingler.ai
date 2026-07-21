@@ -139,9 +139,7 @@ export default function Home() {
     const context = gsap.context(() => {
       gsap.timeline({ delay: 1.05, defaults: { ease: "power4.out" } })
         .from(".site-header", { y: -90, opacity: 0, duration: 1 })
-        .from(".hero-reference-image", { scale: 1.09, opacity: 0, filter: "blur(16px)", duration: 1.45 }, "-=.72")
-        .from(".hero-mobile-copy > *", { y: 28, opacity: 0, stagger: 0.1, duration: 0.75 }, "-=.78")
-        .from(".scroll-cue", { y: 20, opacity: 0, duration: 0.65 }, "-=.52");
+        .from(".hero-reference-frame", { scale: 1.025, opacity: 0, filter: "blur(16px)", duration: 1.45 }, "-=.72");
 
       const desktop = gsap.matchMedia();
       desktop.add("(min-width: 900px)", () => {
@@ -153,11 +151,17 @@ export default function Home() {
             pin: true,
             scrub: 1.15,
             anticipatePin: 1,
+            invalidateOnRefresh: true,
           },
         });
         heroStory
-          .to(".hero-reference-image", { scale: 3.35, xPercent: -9.5, yPercent: 1.5, filter: "saturate(1.2) contrast(1.08)", ease: "power2.inOut", duration: 0.72 }, 0)
-          .to(".hero-zoom-vignette", { opacity: 1, scale: 1.12, duration: 0.58 }, 0.08)
+          .fromTo(
+            ".hero-reference-image",
+            { scale: 1, xPercent: 0, yPercent: 0, opacity: 1, filter: "saturate(1) contrast(1) blur(0px)" },
+            { scale: 3.35, xPercent: -9.5, yPercent: 1.5, opacity: 1, filter: "saturate(1.2) contrast(1.08) blur(0px)", ease: "power2.inOut", duration: 0.72, immediateRender: true },
+            0,
+          )
+          .fromTo(".hero-zoom-vignette", { opacity: 0, scale: 0.82 }, { opacity: 1, scale: 1.12, duration: 0.58, immediateRender: true }, 0.08)
           .to(".hero-mobile-copy, .scroll-cue", { opacity: 0, y: 28, duration: 0.24 }, 0.04)
           .fromTo(".hero-transition-word", { opacity: 0, scale: 0.46 }, { opacity: 1, scale: 1, duration: 0.34, ease: "power3.out" }, 0.58)
           .to(".hero-transition-word span", { letterSpacing: "0.015em", duration: 0.36 }, 0.62)
@@ -225,10 +229,11 @@ export default function Home() {
         });
         gsap.set(".hd-copy", { autoAlpha: 0, y: 42 });
         gsap.set(".hd-copy-1", { autoAlpha: 1, y: 0 });
-        gsap.set(".hd-filter-panel, .hd-result-count, .hd-profile-card, .hd-data-pack, .hd-route-line, .hd-route-pulse, .hd-destination, .hd-final-cta", { autoAlpha: 0 });
+        gsap.set(".hd-filter-panel, .hd-result-count, .hd-profile-card, .hd-data-pack, .hd-route-segment, .hd-route-junction, .hd-route-pulse, .hd-destination, .hd-final-cta", { autoAlpha: 0 });
         gsap.set(".hd-result-value", { autoAlpha: 0, y: 24 });
         gsap.set(".hd-result-value-1", { autoAlpha: 1, y: 0 });
-        gsap.set(".hd-route-line", { scaleX: 0, transformOrigin: "left center" });
+        gsap.set(".hd-route-x", { scaleX: 0, transformOrigin: "left center" });
+        gsap.set(".hd-route-y", { scaleY: 0, transformOrigin: "center top" });
 
         const hdDataStory = gsap.timeline({
           scrollTrigger: {
@@ -278,11 +283,16 @@ export default function Home() {
           .from(".hd-pack-row", { scaleX: 0, transformOrigin: "left center", stagger: 0.06, duration: 0.24 }, 3.55)
           .to(".hd-copy-4", { autoAlpha: 0, y: -36, duration: 0.25 }, 4.12)
           .to(".hd-copy-5", { autoAlpha: 1, y: 0, duration: 0.34 }, 4.28)
-          .to(".hd-data-pack", { x: "-27vw", scale: 0.72, rotateY: -10, duration: 0.52, ease: "power3.inOut" }, 4.18)
-          .to(".hd-route-line", { autoAlpha: 1, scaleX: 1, stagger: 0.1, duration: 0.34 }, 4.48)
-          .to(".hd-destination", { autoAlpha: 1, x: 0, stagger: 0.16, duration: 0.38, ease: "back.out(1.3)" }, 4.58)
+          .to(".hd-data-pack-shell", { xPercent: -32, duration: 0.52, ease: "power3.inOut" }, 4.18)
+          .to(".hd-data-pack", { scale: 0.72, rotateY: -10, duration: 0.52, ease: "power3.inOut" }, 4.18)
+          .to(".hd-route-trunk", { autoAlpha: 1, scaleX: 1, duration: 0.3 }, 4.44)
+          .to(".hd-route-spine", { autoAlpha: 1, scaleY: 1, duration: 0.28 }, 4.62)
+          .to(".hd-route-arm", { autoAlpha: 1, scaleX: 1, stagger: 0.08, duration: 0.26 }, 4.76)
+          .to(".hd-route-junction", { autoAlpha: 1, scale: 1, duration: 0.2, ease: "back.out(2)" }, 4.66)
+          .to(".hd-destination", { autoAlpha: 1, x: 0, stagger: 0.14, duration: 0.38, ease: "back.out(1.3)" }, 4.86)
+          .to(".hd-route-pulse", { autoAlpha: 1, duration: 0.22 }, 5.04)
           .to(".hd-final-cta", { autoAlpha: 1, y: 0, duration: 0.3 }, 5.08)
-          .to(".hd-route-pulse", { autoAlpha: 1, x: "42vw", duration: 0.75, repeat: 1, ease: "none" }, 4.7);
+          .to({}, { duration: 0.62 });
 
         const mosStage = document.querySelector<HTMLElement>(".mos-stage-current");
         const mosDots = gsap.utils.toArray<HTMLElement>(".mos-step-dots i");
@@ -585,20 +595,29 @@ export default function Home() {
                 ))}
               </div>
 
-              <div className="hd-data-pack">
-                <i className="hd-pack-top" aria-hidden="true" />
-                <i className="hd-pack-side" aria-hidden="true" />
-                <small>HD DATA / PACK PRÊT</small>
-                <strong>12 648</strong>
-                <span>profils sélectionnés</span>
-                <div><i className="hd-pack-row" /><i className="hd-pack-row" /><i className="hd-pack-row" /><i className="hd-pack-row" /></div>
-                <b>ACHETÉ · CHIFFRÉ · ACTIVABLE</b>
+              <div className="hd-data-pack-shell">
+                <div className="hd-data-pack">
+                  <i className="hd-pack-top" aria-hidden="true" />
+                  <i className="hd-pack-side" aria-hidden="true" />
+                  <small>HD DATA / PACK PRÊT</small>
+                  <strong>12 648</strong>
+                  <span>profils sélectionnés</span>
+                  <div><i className="hd-pack-row" /><i className="hd-pack-row" /><i className="hd-pack-row" /><i className="hd-pack-row" /></div>
+                  <b>ACHETÉ · CHIFFRÉ · ACTIVABLE</b>
+                </div>
               </div>
 
               <div className="hd-route-stage">
-                <i className="hd-route-line hd-route-line-a" />
-                <i className="hd-route-line hd-route-line-b" />
-                <b className="hd-route-pulse" />
+                <div className="hd-route-network" aria-hidden="true">
+                  <i className="hd-route-segment hd-route-x hd-route-trunk" />
+                  <i className="hd-route-segment hd-route-y hd-route-spine" />
+                  <i className="hd-route-segment hd-route-x hd-route-arm hd-route-arm-iacrm" />
+                  <i className="hd-route-segment hd-route-x hd-route-arm hd-route-arm-reelsend" />
+                  <b className="hd-route-junction" />
+                  <b className="hd-route-pulse hd-route-pulse-source" />
+                  <b className="hd-route-pulse hd-route-pulse-iacrm" />
+                  <b className="hd-route-pulse hd-route-pulse-reelsend" />
+                </div>
                 <article className="hd-destination hd-destination-iacrm">
                   <small>IMPORTER DANS</small><strong>iACRM</strong><span>Qualifier · scorer · suivre</span>
                 </article>
