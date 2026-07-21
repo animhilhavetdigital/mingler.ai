@@ -463,7 +463,7 @@ export default function Home() {
       <section className="hero" id="top" aria-labelledby="hero-title">
         <h1 className="hero-accessible-title" id="hero-title">MINGLER — Chaque signal devient une action.</h1>
         <div className="hero-reference-frame" aria-hidden="true">
-          <img className="hero-reference-image" src="/mingler-hero-orbit.png" alt="" />
+          <img className="hero-reference-image" src="/mingler-hero-network-v2.png" alt="" />
           <div className="hero-zoom-vignette" />
         </div>
         <div className="hero-mobile-copy">
