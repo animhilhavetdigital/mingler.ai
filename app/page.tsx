@@ -15,8 +15,8 @@ const ecosystem = [
     short: "MOS",
     label: "Orchestrer l’acquisition",
     description:
-      "Six agents spécialisés transforment un marché en campagnes mesurables, avec validation humaine à chaque moment décisif.",
-    stat: "6 agents",
+      "Neuf agents spécialisés transforment chaque signal marché en stratégie, contenus, diffusion et décisions mesurables.",
+    stat: "9 agents",
   },
   {
     id: "data",
@@ -48,12 +48,15 @@ const ecosystem = [
 ];
 
 const agents = [
-  ["01", "Étude de marché", "Go, test ou no-go — avant d’investir."],
-  ["02", "Stratégie", "Segments, positionnement, plan et budget."],
-  ["03", "Orchestration", "Un calendrier éditorial cohérent sur 90 jours."],
-  ["04", "Studio créatif", "Des concepts déclinés pour chaque canal."],
-  ["05", "Advertising", "Des campagnes prêtes à valider et publier."],
-  ["06", "Analytics", "Des résultats traduits en prochaines actions."],
+  { id: "market", number: "01", phase: "INPUT", title: "Étude marché & Data", detail: "Tendances · audiences · signaux" },
+  { id: "strategy", number: "02", phase: "CADRAGE", title: "Stratégie & SCP", detail: "Segmentation · ciblage · positionnement" },
+  { id: "orchestrator", number: "03", phase: "ORCHESTRATION", title: "Concepteur opérationnel & orchestrateur éditorial", detail: "Briefs · planning · validation" },
+  { id: "ads", number: "04", phase: "ACTIVATION", title: "Ads Manager", detail: "Media plan · budget · optimisation", branch: true },
+  { id: "content", number: "05", phase: "CRÉATION", title: "Création de contenu multimédia", detail: "Concepts · formats · déclinaisons", branch: true },
+  { id: "email", number: "06", phase: "RELATION", title: "Email Marketing", detail: "Séquences · personnalisation · relance", branch: true },
+  { id: "community", number: "07", phase: "CONVERSATION", title: "Community Manager", detail: "Écoute · engagement · modération", branch: true },
+  { id: "publishing", number: "08", phase: "SORTIE", title: "Diffusion & Publishing", detail: "Planification · contrôle · publication" },
+  { id: "performance", number: "09", phase: "BOUCLE", title: "Performance & Décision", detail: "Attribution · apprentissage · arbitrage" },
 ];
 
 const metrics = [
@@ -296,16 +299,26 @@ export default function Home() {
           .from(".diagnostic-answer p, .diagnostic-answer a", { y: 24, opacity: 0, stagger: 0.08, duration: 0.28 }, 3.46);
 
         const mosStory = gsap.timeline({
-          scrollTrigger: { trigger: ".agent-console", start: "top 82%", end: "bottom 48%", scrub: 0.85 },
+          scrollTrigger: { trigger: ".mos-flow-shell", start: "top 84%", end: "bottom 44%", scrub: 0.9 },
         });
         mosStory
-          .from(".agent-console", { clipPath: "inset(14% 14% 14% 14% round 90px)", scale: 0.88 }, 0)
-          .from(".agent-list article", { x: -100, opacity: 0, stagger: 0.09 }, 0.06)
-          .from(".mos-orchestrator", { scale: 0.28, rotate: -100, opacity: 0 }, 0.08)
-          .from(".mos-node", { scale: 0, opacity: 0, stagger: 0.07 }, 0.18)
-          .to(".mos-beams", { rotate: 250 }, 0.28)
-          .to(".mos-packet", { rotate: 480 }, 0.18)
-          .to(".mos-core", { boxShadow: "0 0 90px rgba(255,75,11,.8)", scale: 1.12 }, 0.58);
+          .from(".mos-flow-shell", { clipPath: "inset(12% 10% 12% 10% round 70px)", scale: 0.9, duration: 0.22 }, 0)
+          .from(".flow-trigger", { y: -30, opacity: 0, duration: 0.14 }, 0.04)
+          .from(".agent-market", { x: -75, opacity: 0, scale: 0.82, duration: 0.16 }, 0.08)
+          .from(".wire-entry", { scaleX: 0, transformOrigin: "left center", stagger: 0.07, duration: 0.16 }, 0.14)
+          .from(".agent-strategy, .agent-orchestrator", { y: 55, opacity: 0, scale: 0.82, stagger: 0.1, duration: 0.18 }, 0.2)
+          .from(".wire-branch-spine", { scaleY: 0, transformOrigin: "center center", duration: 0.22 }, 0.34)
+          .from(".wire-branch", { scaleX: 0, transformOrigin: "left center", stagger: 0.035, duration: 0.14 }, 0.38)
+          .from(".flow-agent-branch", { x: -44, opacity: 0, scale: 0.82, stagger: 0.055, duration: 0.18 }, 0.42)
+          .from(".wire-merge-spine", { scaleY: 0, transformOrigin: "center center", duration: 0.22 }, 0.57)
+          .from(".wire-merge", { scaleX: 0, transformOrigin: "left center", stagger: 0.035, duration: 0.14 }, 0.6)
+          .from(".agent-publishing", { x: -48, opacity: 0, scale: 0.82, duration: 0.18 }, 0.68)
+          .from(".wire-output", { scaleX: 0, transformOrigin: "left center", duration: 0.16 }, 0.74)
+          .from(".agent-performance", { x: -48, opacity: 0, scale: 0.82, duration: 0.18 }, 0.78)
+          .from(".flow-feedback", { opacity: 0, scaleX: 0.72, transformOrigin: "right center", stagger: 0.06, duration: 0.2 }, 0.84)
+          .from(".human-gate", { y: 18, opacity: 0, duration: 0.12 }, 0.88)
+          .to(".agent-orchestrator", { boxShadow: "0 0 55px rgba(255,75,11,.3)", duration: 0.18 }, 0.9)
+          .from(".flow-legend", { y: 20, opacity: 0, duration: 0.12 }, 0.92);
 
         const iacrmStory = gsap.timeline({
           scrollTrigger: {
@@ -541,33 +554,54 @@ export default function Home() {
         <div className="mos-heading gsap-reveal">
           <h2>Votre marketing<br /><span>prend vie.</span></h2>
           <div>
-            <p>Une chaîne d’agents spécialisés transforme une opportunité de marché en exécution mesurable.</p>
+            <p>Neuf agents spécialisés transforment chaque signal marché en stratégie, contenus, diffusion et décisions mesurables.</p>
             <a href="#contact">Découvrir le MOS <Arrow /></a>
           </div>
         </div>
 
-        <div className="agent-console">
+        <div className="mos-flow-shell">
           <div className="console-top">
             <span><i /> MOS / WORKFLOW ACTIF</span>
-            <span>VALIDATION HUMAINE REQUISE</span>
+            <span>9 AGENTS · 1 BOUCLE D’APPRENTISSAGE</span>
           </div>
-          <div className="agent-list">
-            {agents.map(([number, title, description], index) => (
-              <article key={title} style={{ "--delay": `${index * 0.08}s` } as React.CSSProperties}>
-                <span>{number}</span>
-                <div><h3>{title}</h3><p>{description}</p></div>
-                <b>{index < agents.length - 1 ? "EN CHAÎNE" : "BOUCLE"}</b>
-                <i aria-hidden="true">{index < agents.length - 1 ? "↓" : "↻"}</i>
-              </article>
-            ))}
-          </div>
-          <div className="mos-orchestrator" aria-hidden="true">
-            <div className="mos-beams" />
-            <div className="mos-ring ring-a" />
-            <div className="mos-ring ring-b" />
-            <span className="mos-core">MOS<small>ORCHESTRATEUR</small></span>
-            {agents.map(([number], index) => <i className={`mos-node mos-node-${index + 1}`} key={number}>{number}</i>)}
-            <em className="mos-packet"><b /></em>
+          <div className="mos-flow-viewport">
+            <div className="mos-flow-canvas" aria-label="Workflow des neuf agents du Marketing Operating System">
+              <div className="flow-trigger"><span>⚡</span><div><small>TRIGGER</small><strong>Nouveau signal marché</strong></div><b>LIVE</b></div>
+
+              <div className="flow-wires" aria-hidden="true">
+                <i className="flow-wire flow-wire-x wire-entry wire-entry-a" />
+                <i className="flow-wire flow-wire-x wire-entry wire-entry-b" />
+                <i className="flow-wire flow-wire-x wire-entry wire-entry-c" />
+                <i className="flow-wire flow-wire-y wire-branch-spine" />
+                <i className="flow-wire flow-wire-x wire-branch wire-branch-a" />
+                <i className="flow-wire flow-wire-x wire-branch wire-branch-b" />
+                <i className="flow-wire flow-wire-x wire-branch wire-branch-c" />
+                <i className="flow-wire flow-wire-x wire-branch wire-branch-d" />
+                <i className="flow-wire flow-wire-y wire-merge-spine" />
+                <i className="flow-wire flow-wire-x wire-merge wire-merge-a" />
+                <i className="flow-wire flow-wire-x wire-merge wire-merge-b" />
+                <i className="flow-wire flow-wire-x wire-merge wire-merge-c" />
+                <i className="flow-wire flow-wire-x wire-merge wire-merge-d" />
+                <i className="flow-wire flow-wire-x wire-merge wire-merge-output" />
+                <i className="flow-wire flow-wire-x wire-output" />
+                <i className="flow-feedback feedback-outer" />
+                <i className="flow-feedback feedback-inner" />
+              </div>
+
+              {agents.map(({ id, number, phase, title, detail, branch }) => (
+                <article className={`flow-agent agent-${id}${branch ? " flow-agent-branch" : ""}${id === "orchestrator" ? " is-orchestrator" : ""}`} key={id}>
+                  <div className="flow-agent-top"><span>{number}</span><small>{phase}</small></div>
+                  <div className="agent-avatar" aria-hidden="true"><i>AI</i><b /><b /><b /></div>
+                  <h3><small>Agent IA</small>{title}</h3>
+                  <p>{detail}</p>
+                  <div className="agent-progress"><i /></div>
+                  <div className="agent-live"><i /> ACTIF</div>
+                </article>
+              ))}
+
+              <div className="human-gate"><span>✓</span><div><small>HUMAN GATE</small><strong>Validation avant diffusion</strong></div></div>
+              <div className="flow-legend"><span><i /> Signal transmis</span><span><i /> Boucle d’apprentissage</span></div>
+            </div>
           </div>
         </div>
       </section>
