@@ -1,6 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Lenis from "lenis";
+import dynamic from "next/dynamic";
+
+const MinglerScene = dynamic(() => import("./MinglerScene"), { ssr: false });
 
 const ecosystem = [
   {
@@ -147,6 +153,7 @@ function SignalCanvas() {
 }
 
 export default function Home() {
+  const rootRef = useRef<HTMLElement>(null);
   const [activeNode, setActiveNode] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -158,8 +165,130 @@ export default function Home() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    gsap.registerPlugin(ScrollTrigger);
+    const lenis = new Lenis({ lerp: 0.075, smoothWheel: true, wheelMultiplier: 0.92 });
+    let frame = 0;
+    const animateScroll = (time: number) => {
+      lenis.raf(time);
+      frame = requestAnimationFrame(animateScroll);
+    };
+    frame = requestAnimationFrame(animateScroll);
+
+    const progressBar = document.querySelector<HTMLElement>(".scroll-progress i");
+    const updateProgress = ({ progress }: { progress: number }) => {
+      if (progressBar) progressBar.style.transform = `scaleX(${progress})`;
+      ScrollTrigger.update();
+    };
+    lenis.on("scroll", updateProgress);
+
+    const context = gsap.context(() => {
+      gsap.timeline({ delay: 1.05, defaults: { ease: "power4.out" } })
+        .from(".site-header", { y: -90, opacity: 0, duration: 1 })
+        .from(".hero .eyebrow", { y: 24, opacity: 0, duration: 0.7 }, "-=.55")
+        .from(".hero-line > i", { yPercent: 118, duration: 1.15, stagger: 0.1 }, "-=.55")
+        .from(".hero-lead, .hero-actions, .hero-proof", { y: 30, opacity: 0, duration: 0.85, stagger: 0.09 }, "-=.75")
+        .from(".orbit-stage", { scale: 0.72, opacity: 0, rotate: -8, duration: 1.35 }, "-=1.1");
+
+      const desktop = gsap.matchMedia();
+      desktop.add("(min-width: 900px)", () => {
+        const heroStory = gsap.timeline({
+          scrollTrigger: {
+            trigger: ".hero",
+            start: "top top",
+            end: "+=185%",
+            pin: true,
+            scrub: 1.15,
+            anticipatePin: 1,
+          },
+        });
+        heroStory
+          .to(".hero-copy", { xPercent: -24, yPercent: -8, opacity: 0.04, ease: "power2.in" }, 0)
+          .to(".orbit-stage", { xPercent: -43, yPercent: 4, scale: 1.75, rotate: 9, ease: "power2.inOut" }, 0)
+          .to(".satellite", { x: (index) => (index % 2 ? 180 : -180), y: (index) => (index < 2 ? -100 : 110), opacity: 0, scale: 0.55, stagger: 0.035 }, 0.08)
+          .to(".orbit-detail, .hero-proof, .scroll-cue", { opacity: 0, y: 24 }, 0.05)
+          .fromTo(".hero-transition-word", { opacity: 0, scale: 0.55 }, { opacity: 1, scale: 1, duration: 0.42, ease: "power2.out" }, 0.42)
+          .to(".hero-transition-word span", { letterSpacing: "0.02em", duration: 0.45 }, 0.5)
+          .to(".orbit-stage", { opacity: 0.18, scale: 2.3, duration: 0.32 }, 0.68)
+          .to(".hero-transition-word", { opacity: 0, scale: 1.18, duration: 0.2 }, 0.86);
+
+        const dataStory = gsap.timeline({
+          scrollTrigger: { trigger: ".dark-section", start: "top 75%", end: "bottom 55%", scrub: 1 },
+        });
+        dataStory
+          .from(".dark-intro h2", { xPercent: -18, opacity: 0.08 }, 0)
+          .from(".dark-intro p", { xPercent: 35, opacity: 0 }, 0.06)
+          .from(".data-rail article", { y: 170, opacity: 0, stagger: 0.12 }, 0.12)
+          .fromTo(".rail-line i", { scaleX: 0 }, { scaleX: 1, transformOrigin: "left center" }, 0.12)
+          .from(".dark-quote", { y: 100, opacity: 0 }, 0.55)
+          .fromTo(".motion-phrase", { xPercent: 25 }, { xPercent: -30, ease: "none" }, 0.12);
+
+        const mosStory = gsap.timeline({
+          scrollTrigger: { trigger: ".agent-console", start: "top 82%", end: "bottom 48%", scrub: 0.85 },
+        });
+        mosStory
+          .from(".agent-console", { clipPath: "inset(14% 14% 14% 14% round 90px)", scale: 0.88 }, 0)
+          .from(".agent-list article", { x: -100, opacity: 0, stagger: 0.09 }, 0.06)
+          .from(".console-orb", { scale: 0.28, rotate: -100, opacity: 0 }, 0.08)
+          .to(".console-orb", { rotate: 130 }, 0.45);
+
+        gsap.utils.toArray<HTMLElement>(".product-card").forEach((card, index) => {
+          gsap.from(card, {
+            y: 180,
+            rotate: index % 2 ? 4 : -4,
+            scale: 0.9,
+            opacity: 0,
+            ease: "power3.out",
+            scrollTrigger: { trigger: card, start: "top 90%", end: "top 48%", scrub: 0.7 },
+          });
+        });
+      });
+
+      gsap.utils.toArray<HTMLElement>(".gsap-reveal").forEach((element) => {
+        gsap.from(element, {
+          y: 80,
+          opacity: 0,
+          duration: 1.05,
+          ease: "power3.out",
+          scrollTrigger: { trigger: element, start: "top 88%", toggleActions: "play none none reverse" },
+        });
+      });
+
+      gsap.to(".marquee-track", {
+        xPercent: -45,
+        ease: "none",
+        scrollTrigger: { trigger: ".motion-marquee", start: "top bottom", end: "bottom top", scrub: 1 },
+      });
+      gsap.fromTo(".contact-rings", { scale: 0.45, rotate: -24 }, {
+        scale: 1.28,
+        rotate: 18,
+        ease: "none",
+        scrollTrigger: { trigger: ".contact-section", start: "top bottom", end: "center center", scrub: 1 },
+      });
+
+      return () => desktop.revert();
+    }, rootRef);
+
+    const timeout = window.setTimeout(() => ScrollTrigger.refresh(), 450);
+    return () => {
+      window.clearTimeout(timeout);
+      cancelAnimationFrame(frame);
+      lenis.off("scroll", updateProgress);
+      lenis.destroy();
+      context.revert();
+    };
+  }, []);
+
   return (
-    <main>
+    <main ref={rootRef}>
+      <div className="intro-curtain" aria-hidden="true">
+        <div><span className="brand-mark" /><strong>MINGLER</strong></div>
+        <i />
+        <small>RELIONS LES SIGNAUX</small>
+      </div>
+      <div className="scroll-progress" aria-hidden="true"><i /></div>
       <header className={`site-header ${scrolled ? "is-scrolled" : ""}`}>
         <a className="brand" href="#top" aria-label="Mingler — accueil">
           <span className="brand-mark" aria-hidden="true" />
@@ -188,9 +317,9 @@ export default function Home() {
         <div className="hero-copy">
           <p className="eyebrow"><i /> Pour ne plus perdre vos futurs clients</p>
           <h1>
-            Chaque signal.<br />
-            <span>La bonne action.</span><br />
-            Au bon moment.
+            <span className="hero-line"><i>Chaque signal.</i></span>
+            <span className="hero-line accent"><i>La bonne action.</i></span>
+            <span className="hero-line"><i>Au bon moment.</i></span>
           </h1>
           <p className="hero-lead">
             Mingler relie l’acquisition, la donnée et la relation client dans un même système intelligent. Votre équipe sait quoi faire ensuite.
@@ -207,6 +336,7 @@ export default function Home() {
         </div>
 
         <div className="orbit-stage" aria-label="Écosystème interactif Mingler">
+          <MinglerScene />
           <div className="orbit orbit-one" />
           <div className="orbit orbit-two" />
           <div className="orbit orbit-three" />
@@ -233,12 +363,13 @@ export default function Home() {
             <p>{ecosystem[activeNode].description}</p>
           </div>
         </div>
+        <div className="hero-transition-word" aria-hidden="true"><small>UNE MÉMOIRE.</small><span>TOUT EST RELIÉ</span></div>
         <a className="scroll-cue" href="#ecosysteme"><span /> Faire circuler la donnée</a>
       </section>
 
       <section className="dark-section" id="ecosysteme">
         <div className="section-kicker"><span>01</span> L’écosystème</div>
-        <div className="dark-intro">
+        <div className="dark-intro gsap-reveal">
           <h2>Quatre forces.<br /><i>Une seule mémoire.</i></h2>
           <p>Les outils ne manquent pas. Ce qui manque, c’est le fil qui relie chaque signal à la prochaine décision.</p>
         </div>
@@ -253,11 +384,19 @@ export default function Home() {
           <span>Le principe Mingler</span>
           <blockquote>La donnée n’attend plus dans un outil.<br />Elle déclenche une action.</blockquote>
         </div>
+        <div className="motion-phrase" aria-hidden="true">SIGNAL&nbsp;&nbsp; CONTEXTE&nbsp;&nbsp; DÉCISION&nbsp;&nbsp; ACTION</div>
       </section>
+
+      <div className="motion-marquee" aria-hidden="true">
+        <div className="marquee-track">
+          <span>ACQUÉRIR</span><i>✦</i><span>COMPRENDRE</span><i>✦</i><span>ACTIVER</span><i>✦</i><span>MESURER</span><i>✦</i>
+          <span>ACQUÉRIR</span><i>✦</i><span>COMPRENDRE</span><i>✦</i><span>ACTIVER</span><i>✦</i><span>MESURER</span><i>✦</i>
+        </div>
+      </div>
 
       <section className="mos-section" id="mos">
         <div className="section-kicker"><span>02</span> MOS Marketing</div>
-        <div className="mos-heading">
+        <div className="mos-heading gsap-reveal">
           <h2>Votre marketing<br /><span>prend vie.</span></h2>
           <div>
             <p>Une chaîne d’agents spécialisés transforme une opportunité de marché en exécution mesurable.</p>
@@ -286,7 +425,7 @@ export default function Home() {
 
       <section className="products-section" id="produits">
         <div className="section-kicker"><span>03</span> Les produits</div>
-        <div className="products-title">
+        <div className="products-title gsap-reveal">
           <h2>Chaque brique est forte.<br />Ensemble, elles deviennent <span>inarrêtables.</span></h2>
         </div>
         <div className="product-grid">
