@@ -63,6 +63,33 @@ const metrics = [
   ["−70%", "temps de gestion"],
 ];
 
+const diagnosticQuestions = [
+  {
+    number: "01",
+    signal: "ORIGINE",
+    question: "Savez-vous exactement d’où viennent vos meilleurs clients ?",
+    insight: "Pas seulement le canal : la campagne, le message et le premier signal qui ont créé la relation.",
+  },
+  {
+    number: "02",
+    signal: "ACTION",
+    question: "Chaque prospect reçoit-il automatiquement la bonne action au bon moment ?",
+    insight: "Sans attendre qu’une personne rapproche manuellement les informations et décide de relancer.",
+  },
+  {
+    number: "03",
+    signal: "MÉMOIRE",
+    question: "Avez-vous une seule histoire client, ou des informations dispersées dans plusieurs outils ?",
+    insight: "Une histoire que marketing, vente et relation client peuvent reprendre sans la reconstruire.",
+  },
+  {
+    number: "04",
+    signal: "APPRENTISSAGE",
+    question: "Pouvez-vous expliquer pourquoi un client achète… ou abandonne ?",
+    insight: "Et transformer cette réponse en une prochaine décision plus précise pour toute l’équipe.",
+  },
+];
+
 function Arrow({ diagonal = false }: { diagonal?: boolean }) {
   return <span aria-hidden="true">{diagonal ? "↗" : "→"}</span>;
 }
@@ -225,6 +252,49 @@ export default function Home() {
           .from(".dark-quote", { y: 100, opacity: 0 }, 0.55)
           .fromTo(".motion-phrase", { xPercent: 25 }, { xPercent: -30, ease: "none" }, 0.12);
 
+        const questionCards = gsap.utils.toArray<HTMLElement>(".diagnostic-question");
+        const diagnosticAnswer = document.querySelector<HTMLElement>(".diagnostic-answer");
+        const diagnosticCount = document.querySelector<HTMLElement>(".diagnostic-count");
+        const diagnosticDots = gsap.utils.toArray<HTMLElement>(".diagnostic-dots i");
+
+        gsap.set(questionCards, { autoAlpha: 0, yPercent: 46, rotateX: -12, scale: 0.9 });
+        gsap.set(questionCards[0], { autoAlpha: 1, yPercent: 0, rotateX: 0, scale: 1 });
+        gsap.set(diagnosticAnswer, { autoAlpha: 0, yPercent: 34, scale: 0.92 });
+
+        const setDiagnosticStep = (progress: number) => {
+          const step = Math.min(4, Math.floor(progress * 4.75));
+          if (diagnosticCount) diagnosticCount.textContent = String(Math.min(step + 1, 4)).padStart(2, "0");
+          diagnosticDots.forEach((dot, index) => dot.classList.toggle("is-active", index <= Math.min(step, 3)));
+        };
+
+        const diagnosticStory = gsap.timeline({
+          scrollTrigger: {
+            trigger: ".diagnostic-section",
+            start: "top top",
+            end: "+=420%",
+            pin: ".diagnostic-pin",
+            scrub: 1.05,
+            anticipatePin: 1,
+            onUpdate: (self) => setDiagnosticStep(self.progress),
+          },
+        });
+
+        questionCards.forEach((card, index) => {
+          if (index === 0) return;
+          const previous = questionCards[index - 1];
+          const position = index * 0.82;
+          diagnosticStory
+            .to(previous, { autoAlpha: 0, yPercent: -38, rotateX: 10, scale: 0.91, duration: 0.24 }, position - 0.18)
+            .to(card, { autoAlpha: 1, yPercent: 0, rotateX: 0, scale: 1, duration: 0.34, ease: "power3.out" }, position);
+        });
+
+        diagnosticStory
+          .to(questionCards[questionCards.length - 1], { autoAlpha: 0, yPercent: -38, rotateX: 10, scale: 0.91, duration: 0.25 }, 3.12)
+          .to(".diagnostic-head", { opacity: 0.32, yPercent: -8, duration: 0.28 }, 3.12)
+          .to(diagnosticAnswer, { autoAlpha: 1, yPercent: 0, scale: 1, duration: 0.42, ease: "power3.out" }, 3.3)
+          .fromTo(".diagnostic-answer-line i", { scaleX: 0 }, { scaleX: 1, transformOrigin: "left center", duration: 0.36 }, 3.38)
+          .from(".diagnostic-answer p, .diagnostic-answer a", { y: 24, opacity: 0, stagger: 0.08, duration: 0.28 }, 3.46);
+
         const mosStory = gsap.timeline({
           scrollTrigger: { trigger: ".agent-console", start: "top 82%", end: "bottom 48%", scrub: 0.85 },
         });
@@ -351,23 +421,23 @@ export default function Home() {
       <section className="hero" id="top">
         <SignalCanvas />
         <div className="hero-copy">
-          <p className="eyebrow"><i /> Pour ne plus perdre vos futurs clients</p>
+          <p className="eyebrow"><i /> Le problème n’est pas le nombre d’outils</p>
           <h1>
-            <span className="hero-line"><i>Chaque signal.</i></span>
-            <span className="hero-line accent"><i>La bonne action.</i></span>
-            <span className="hero-line"><i>Au bon moment.</i></span>
+            <span className="hero-line"><i>Vos outils savent.</i></span>
+            <span className="hero-line"><i>Votre croissance</i></span>
+            <span className="hero-line accent"><i>oublie.</i></span>
           </h1>
           <p className="hero-lead">
-            Mingler relie l’acquisition, la donnée et la relation client dans un même système intelligent. Votre équipe sait quoi faire ensuite.
+            Chaque équipe capte une partie de l’histoire client. Mais entre deux outils, deux équipes ou deux étapes, le contexte se perd — et la prochaine action devient moins précise.
           </p>
           <div className="hero-actions">
-            <a className="button button-primary" href="#ecosysteme">Explorer l’écosystème <Arrow /></a>
+            <a className="button button-primary" href="#diagnostic">Faire le test <Arrow /></a>
             <a className="button button-secondary" href="#contact">Voir Mingler en action <Arrow diagonal /></a>
           </div>
           <div className="hero-proof">
-            <span><b>01</b> Données unifiées</span>
-            <span><b>02</b> IA intégrée</span>
-            <span><b>03</b> Résultats visibles</span>
+            <span><b>01</b> Source perdue</span>
+            <span><b>02</b> Relance manuelle</span>
+            <span><b>03</b> Contexte dispersé</span>
           </div>
         </div>
 
@@ -404,23 +474,59 @@ export default function Home() {
       </section>
 
       <section className="dark-section" id="ecosysteme">
-        <div className="section-kicker"><span>01</span> L’écosystème</div>
+        <div className="section-kicker"><span>P</span> Le problème invisible</div>
         <div className="dark-intro gsap-reveal">
-          <h2>Quatre forces.<br /><i>Une seule mémoire.</i></h2>
-          <p>Les outils ne manquent pas. Ce qui manque, c’est le fil qui relie chaque signal à la prochaine décision.</p>
+          <h2>Vos outils savent.<br /><i>Séparément.</i></h2>
+          <p>La donnée existe. Mais à chaque relais, une partie de son origine, de son contexte ou de sa prochaine action disparaît.</p>
         </div>
-        <div className="data-rail" aria-label="Parcours de la donnée">
+        <div className="data-rail" aria-label="Les ruptures de l’histoire client">
           <div className="rail-line"><i /></div>
-          <article><span>ENTRÉE</span><b>Acquisition</b><p>Pages, campagnes, data, partenaires et recommandations.</p></article>
-          <article><span>MÉMOIRE</span><b>iACRM</b><p>La source, le contexte et le stade restent attachés au contact.</p></article>
-          <article><span>DÉCISION</span><b>Intelligence</b><p>Qualification, score, segmentation et prochaine meilleure action.</p></article>
-          <article><span>IMPACT</span><b>Croissance</b><p>Conversion, fidélisation, réactivation et valeur client.</p></article>
+          <article><span>SOURCE</span><b>Un prospect arrive</b><p>Sa campagne et son premier signal deviennent vite un champ oublié.</p></article>
+          <article><span>RELAIS</span><b>Le marketing transmet</b><p>La vente reconstruit une histoire que l’entreprise connaît déjà.</p></article>
+          <article><span>TEMPO</span><b>Un signal apparaît</b><p>La relance attend qu’une personne le remarque et trouve le contexte.</p></article>
+          <article><span>APPRENTISSAGE</span><b>Le résultat tombe</b><p>La prochaine campagne recommence sans retenir toute la leçon.</p></article>
         </div>
         <div className="dark-quote">
-          <span>Le principe Mingler</span>
-          <blockquote>La donnée n’attend plus dans un outil.<br />Elle déclenche une action.</blockquote>
+          <span>Le vrai problème</span>
+          <blockquote>Votre entreprise ne manque pas d’informations.<br />Elle manque d’une mémoire commerciale commune.</blockquote>
         </div>
         <div className="motion-phrase" aria-hidden="true">SIGNAL&nbsp;&nbsp; CONTEXTE&nbsp;&nbsp; DÉCISION&nbsp;&nbsp; ACTION</div>
+      </section>
+
+      <section className="diagnostic-section" id="diagnostic" aria-labelledby="diagnostic-title">
+        <div className="diagnostic-pin">
+          <div className="diagnostic-grid" aria-hidden="true" />
+          <div className="diagnostic-head">
+            <div className="section-kicker light"><span>A</span> Le test décisif</div>
+            <p className="diagnostic-index">QUESTION <strong className="diagnostic-count">01</strong><i>/04</i></p>
+            <h2 id="diagnostic-title">Pouvez-vous répondre<br /><em>immédiatement ?</em></h2>
+            <p>Répondez mentalement. Si la réponse demande plusieurs outils, plusieurs personnes ou plusieurs minutes, continuez à faire défiler.</p>
+            <div className="diagnostic-dots" aria-hidden="true">
+              {diagnosticQuestions.map(({ number }) => <i key={number} className={number === "01" ? "is-active" : ""} />)}
+            </div>
+          </div>
+
+          <div className="diagnostic-stage">
+            {diagnosticQuestions.map(({ number, signal, question, insight }) => (
+              <article className="diagnostic-question" key={number}>
+                <div className="question-meta"><span>{number}</span><b>{signal}</b></div>
+                <h3>{question}</h3>
+                <p>{insight}</p>
+                <i className="question-corner" aria-hidden="true" />
+              </article>
+            ))}
+
+            <article className="diagnostic-answer">
+              <span>CE QUE VOS RÉPONSES RÉVÈLENT</span>
+              <h3>Vous n’avez pas quatre problèmes.<br /><em>Vous avez une histoire client fragmentée.</em></h3>
+              <div className="diagnostic-answer-line"><i /></div>
+              <p>Ce n’est pas un manque d’effort de vos équipes. C’est le manque de continuité entre ce que votre entreprise sait, ce qu’elle fait et ce qu’elle apprend.</p>
+              <a href="#mos">Découvrir la continuité MINGLER <Arrow /></a>
+            </article>
+          </div>
+
+          <p className="diagnostic-scroll" aria-hidden="true"><span /> CONTINUEZ À DÉFILER</p>
+        </div>
       </section>
 
       <div className="motion-marquee" aria-hidden="true">
