@@ -24,8 +24,8 @@ const ecosystem = [
     short: "DATA",
     label: "Trouver les bonnes personnes",
     description:
-      "Des données enrichies par persona deviennent des prospects prioritaires, prêts à entrer dans votre tunnel commercial.",
-    stat: "1 profil unifié",
+      "Une base de plus de 20 millions de profils à filtrer, acheter puis activer directement dans iACRM ou ReelSend.",
+    stat: "+20M profils",
   },
   {
     id: "network",
@@ -57,6 +57,17 @@ const agents = [
   { id: "community", title: "Community Manager", branch: true },
   { id: "publishing", title: "Diffusion & Publishing" },
   { id: "performance", title: "Performance & Décision" },
+];
+
+const hdDataFilters = ["Maroc", "Immobilier", "Dirigeants", "10–200 salariés"];
+
+const hdDataProfiles = [
+  { role: "Directrice commerciale", company: "Promotion immobilière", city: "Casablanca" },
+  { role: "Fondateur", company: "Gestion locative", city: "Rabat" },
+  { role: "Directeur général", company: "Construction B2B", city: "Tanger" },
+  { role: "Responsable acquisition", company: "PropTech", city: "Marrakech" },
+  { role: "Gérante", company: "Agence immobilière", city: "Agadir" },
+  { role: "Directeur développement", company: "Investissement", city: "Casablanca" },
 ];
 
 const metrics = [
@@ -287,6 +298,82 @@ export default function Home() {
           .fromTo(".diagnostic-answer-line i", { scaleX: 0 }, { scaleX: 1, transformOrigin: "left center", duration: 0.36 }, 3.38)
           .from(".diagnostic-answer p, .diagnostic-answer a", { y: 24, opacity: 0, stagger: 0.08, duration: 0.28 }, 3.46);
 
+        const hdStage = document.querySelector<HTMLElement>(".hd-stage-current");
+        const hdSteps = gsap.utils.toArray<HTMLElement>(".hd-step-progress i");
+        const hdParticles = gsap.utils.toArray<HTMLElement>(".hd-particle");
+        const setHdStage = (progress: number) => {
+          const stage = Math.min(5, Math.floor(progress * 5) + 1);
+          if (hdStage) hdStage.textContent = String(stage).padStart(2, "0");
+          hdSteps.forEach((step, index) => step.classList.toggle("is-active", index < stage));
+        };
+        const setHdFullscreen = (active: boolean) => rootRef.current?.classList.toggle("hd-stage-active", active);
+
+        gsap.set(hdParticles, {
+          x: (index) => ((((index * 73) % 101) / 100) - 0.5) * window.innerWidth * 1.06,
+          y: (index) => ((((index * 47) % 97) / 96) - 0.5) * window.innerHeight * 0.82,
+          scale: (index) => 0.55 + (index % 5) * 0.18,
+        });
+        gsap.set(".hd-copy", { autoAlpha: 0, y: 42 });
+        gsap.set(".hd-copy-1", { autoAlpha: 1, y: 0 });
+        gsap.set(".hd-filter-panel, .hd-result-count, .hd-profile-card, .hd-data-pack, .hd-route-line, .hd-route-pulse, .hd-destination, .hd-final-cta", { autoAlpha: 0 });
+        gsap.set(".hd-result-value", { autoAlpha: 0, y: 24 });
+        gsap.set(".hd-result-value-1", { autoAlpha: 1, y: 0 });
+        gsap.set(".hd-route-line", { scaleX: 0, transformOrigin: "left center" });
+
+        const hdDataStory = gsap.timeline({
+          scrollTrigger: {
+            trigger: ".hd-data-sticky",
+            start: "top top",
+            end: "+=650%",
+            pin: ".hd-data-sticky",
+            scrub: 1.05,
+            anticipatePin: 1,
+            onEnter: () => setHdFullscreen(true),
+            onEnterBack: () => setHdFullscreen(true),
+            onLeave: () => setHdFullscreen(false),
+            onLeaveBack: () => setHdFullscreen(false),
+            onUpdate: (self) => setHdStage(self.progress),
+          },
+        });
+
+        hdDataStory
+          .from(".hd-data-number", { autoAlpha: 0, scale: 0.48, filter: "blur(20px)", duration: 0.5, ease: "power3.out" }, 0)
+          .from(hdParticles, { autoAlpha: 0, scale: 0, stagger: { amount: 0.62, from: "random" }, duration: 0.48 }, 0.02)
+          .from(".hd-lens", { scale: 0.2, autoAlpha: 0, rotate: -80, duration: 0.5 }, 0.18)
+          .to(".hd-copy-1", { autoAlpha: 0, y: -36, duration: 0.26 }, 0.78)
+          .to(".hd-copy-2", { autoAlpha: 1, y: 0, duration: 0.36 }, 0.94)
+          .to(".hd-data-number", { scale: 0.54, autoAlpha: 0.12, duration: 0.45 }, 0.88)
+          .to(".hd-filter-panel", { autoAlpha: 1, y: 0, duration: 0.34 }, 1)
+          .from(".hd-filter-chip", { autoAlpha: 0, x: 38, stagger: 0.14, duration: 0.26 }, 1.06)
+          .to(".hd-result-count", { autoAlpha: 1, scale: 1, duration: 0.28 }, 1.12)
+          .to(".hd-result-value-1", { autoAlpha: 0, y: -22, duration: 0.16 }, 1.3)
+          .to(".hd-result-value-2", { autoAlpha: 1, y: 0, duration: 0.2 }, 1.36)
+          .to(".hd-result-value-2", { autoAlpha: 0, y: -22, duration: 0.16 }, 1.56)
+          .to(".hd-result-value-3", { autoAlpha: 1, y: 0, duration: 0.2 }, 1.62)
+          .to(".hd-result-value-3", { autoAlpha: 0, y: -22, duration: 0.16 }, 1.82)
+          .to(".hd-result-value-4", { autoAlpha: 1, y: 0, duration: 0.22 }, 1.88)
+          .to(".hd-particle:not(.is-selected)", { autoAlpha: 0.055, scale: 0.35, duration: 0.7 }, 1.14)
+          .to(".hd-particle.is-selected", { backgroundColor: "#ff5a16", boxShadow: "0 0 18px rgba(255,75,11,.95)", scale: 1.75, duration: 0.65 }, 1.18)
+          .to(".hd-lens", { rotate: 34, scale: 1.08, duration: 1.05, ease: "none" }, 1.04)
+          .to(".hd-copy-2", { autoAlpha: 0, y: -36, duration: 0.25 }, 2.18)
+          .to(".hd-copy-3", { autoAlpha: 1, y: 0, duration: 0.34 }, 2.34)
+          .to(".hd-filter-panel", { autoAlpha: 0.28, x: 34, duration: 0.32 }, 2.24)
+          .to(".hd-profile-card", { autoAlpha: 1, y: 0, rotateX: 0, stagger: 0.11, duration: 0.34, ease: "back.out(1.2)" }, 2.42)
+          .to(".hd-particle.is-selected", { x: 0, y: 0, autoAlpha: 0.18, scale: 0.45, stagger: { amount: 0.45, from: "random" }, duration: 0.58 }, 2.36)
+          .to(".hd-copy-3", { autoAlpha: 0, y: -36, duration: 0.25 }, 3.16)
+          .to(".hd-copy-4", { autoAlpha: 1, y: 0, duration: 0.34 }, 3.32)
+          .to(".hd-profile-card", { autoAlpha: 0, y: 36, scale: 0.18, stagger: 0.06, duration: 0.28 }, 3.24)
+          .to(".hd-filter-panel, .hd-result-count", { autoAlpha: 0, duration: 0.24 }, 3.18)
+          .to(".hd-data-pack", { autoAlpha: 1, scale: 1, rotateX: 0, rotateY: 0, duration: 0.48, ease: "back.out(1.4)" }, 3.42)
+          .from(".hd-pack-row", { scaleX: 0, transformOrigin: "left center", stagger: 0.06, duration: 0.24 }, 3.55)
+          .to(".hd-copy-4", { autoAlpha: 0, y: -36, duration: 0.25 }, 4.12)
+          .to(".hd-copy-5", { autoAlpha: 1, y: 0, duration: 0.34 }, 4.28)
+          .to(".hd-data-pack", { x: "-27vw", scale: 0.72, rotateY: -10, duration: 0.52, ease: "power3.inOut" }, 4.18)
+          .to(".hd-route-line", { autoAlpha: 1, scaleX: 1, stagger: 0.1, duration: 0.34 }, 4.48)
+          .to(".hd-destination", { autoAlpha: 1, x: 0, stagger: 0.16, duration: 0.38, ease: "back.out(1.3)" }, 4.58)
+          .to(".hd-final-cta", { autoAlpha: 1, y: 0, duration: 0.3 }, 5.08)
+          .to(".hd-route-pulse", { autoAlpha: 1, x: "42vw", duration: 0.75, repeat: 1, ease: "none" }, 4.7);
+
         const mosStage = document.querySelector<HTMLElement>(".mos-stage-current");
         const mosDots = gsap.utils.toArray<HTMLElement>(".mos-step-dots i");
         const setMosStage = (progress: number) => {
@@ -379,7 +466,10 @@ export default function Home() {
           });
         });
 
-        return () => setMosFullscreen(false);
+        return () => {
+          setHdFullscreen(false);
+          setMosFullscreen(false);
+        };
       });
 
       gsap.utils.toArray<HTMLElement>(".gsap-reveal").forEach((element) => {
@@ -432,6 +522,7 @@ export default function Home() {
         </a>
         <nav className={menuOpen ? "nav-open" : ""} aria-label="Navigation principale">
           <a href="#diagnostic" onClick={() => setMenuOpen(false)}>Diagnostic</a>
+          <a href="#hd-data" onClick={() => setMenuOpen(false)}>HD Data</a>
           <a href="#mos" onClick={() => setMenuOpen(false)}>MOS</a>
           <a href="#iacrm" onClick={() => setMenuOpen(false)}>iACRM</a>
           <a href="#produits" onClick={() => setMenuOpen(false)}>Produits</a>
@@ -532,11 +623,127 @@ export default function Home() {
               <h3>Vous n’avez pas quatre problèmes.<br /><em>Vous avez une histoire client fragmentée.</em></h3>
               <div className="diagnostic-answer-line"><i /></div>
               <p>Ce n’est pas un manque d’effort de vos équipes. C’est le manque de continuité entre ce que votre entreprise sait, ce qu’elle fait et ce qu’elle apprend.</p>
-              <a href="#mos">Découvrir la continuité MINGLER <Arrow /></a>
+              <a href="#hd-data">Découvrir HD Data <Arrow /></a>
             </article>
           </div>
 
           <p className="diagnostic-scroll" aria-hidden="true"><span /> CONTINUEZ À DÉFILER</p>
+        </div>
+      </section>
+
+      <section className="hd-data-section" id="hd-data" aria-labelledby="hd-data-title">
+        <div className="hd-data-sticky">
+          <div className="hd-data-grid" aria-hidden="true" />
+          <div className="hd-data-console">
+            <span><i /> HD DATA / BASE ACTIVE</span>
+            <span>ÉTAPE <strong className="hd-stage-current">01</strong><b>/05</b></span>
+          </div>
+
+          <div className="hd-data-scene">
+            <div className="hd-copy-stack">
+              <article className="hd-copy hd-copy-1">
+                <small>02 / HD DATA</small>
+                <h2 id="hd-data-title">20 millions de profils.<br /><em>Votre cible est ici.</em></h2>
+                <p>Explorez une base B2B massive sans acheter une liste au hasard.</p>
+              </article>
+              <article className="hd-copy hd-copy-2">
+                <small>CIBLAGE EN DIRECT</small>
+                <h3>Décrivez votre audience.<br /><em>La base se resserre.</em></h3>
+                <p>Localisation, secteur, fonction et taille d’entreprise isolent les profils utiles.</p>
+              </article>
+              <article className="hd-copy hd-copy-3">
+                <small>AUDIENCE IDENTIFIÉE</small>
+                <h3>12 648 profils.<br /><em>Pas une liste au hasard.</em></h3>
+                <p>Prévisualisez la composition de votre audience avant de la déverrouiller.</p>
+              </article>
+              <article className="hd-copy hd-copy-4">
+                <small>ACHAT À LA CARTE</small>
+                <h3>Votre sélection devient<br /><em>un Data Pack.</em></h3>
+                <p>Achetez uniquement les données dont votre prochaine action a besoin.</p>
+              </article>
+              <article className="hd-copy hd-copy-5">
+                <small>ACTIVATION IMMÉDIATE</small>
+                <h3>Une audience.<br /><em>Deux chemins directs.</em></h3>
+                <p>Injectez le Data Pack dans iACRM ou lancez une campagne avec ReelSend.</p>
+                <a className="hd-final-cta" href="#contact">Construire une audience <Arrow diagonal /></a>
+              </article>
+            </div>
+
+            <div className="hd-data-visual" aria-label="Une base de vingt millions de profils se filtre puis devient un Data Pack activable">
+              <div className="hd-particle-field" aria-hidden="true">
+                {Array.from({ length: 108 }, (_, index) => (
+                  <i className={`hd-particle${index % 8 === 0 ? " is-selected" : ""}`} key={index} />
+                ))}
+              </div>
+
+              <div className="hd-lens" aria-hidden="true">
+                <i className="hd-lens-ring hd-lens-ring-1" />
+                <i className="hd-lens-ring hd-lens-ring-2" />
+                <i className="hd-lens-ring hd-lens-ring-3" />
+                <span /><b />
+              </div>
+
+              <div className="hd-data-number">
+                <strong>20M<sup>+</sup></strong>
+                <span>PROFILS B2B DISPONIBLES</span>
+              </div>
+
+              <aside className="hd-filter-panel" aria-label="Critères de ciblage">
+                <span>VOTRE AUDIENCE</span>
+                {hdDataFilters.map((filter, index) => (
+                  <div className="hd-filter-chip" key={filter}><small>0{index + 1}</small><strong>{filter}</strong><i>×</i></div>
+                ))}
+              </aside>
+
+              <div className="hd-result-count" aria-live="polite">
+                <small>PROFILS CORRESPONDANTS</small>
+                <div>
+                  <strong className="hd-result-value hd-result-value-1">20 000 000</strong>
+                  <strong className="hd-result-value hd-result-value-2">1 284 760</strong>
+                  <strong className="hd-result-value hd-result-value-3">184 320</strong>
+                  <strong className="hd-result-value hd-result-value-4">12 648</strong>
+                </div>
+              </div>
+
+              <div className="hd-profile-stage">
+                {hdDataProfiles.map(({ role, company, city }, index) => (
+                  <article className={`hd-profile-card hd-profile-card-${index + 1}`} key={role}>
+                    <small>PROFIL {String(index + 1).padStart(2, "0")}</small>
+                    <strong>{role}</strong>
+                    <span>{company}<br />{city}</span>
+                    <i>DONNÉES VERROUILLÉES</i>
+                  </article>
+                ))}
+              </div>
+
+              <div className="hd-data-pack">
+                <i className="hd-pack-top" aria-hidden="true" />
+                <i className="hd-pack-side" aria-hidden="true" />
+                <small>HD DATA / PACK PRÊT</small>
+                <strong>12 648</strong>
+                <span>profils sélectionnés</span>
+                <div><i className="hd-pack-row" /><i className="hd-pack-row" /><i className="hd-pack-row" /><i className="hd-pack-row" /></div>
+                <b>ACHETÉ · CHIFFRÉ · ACTIVABLE</b>
+              </div>
+
+              <div className="hd-route-stage">
+                <i className="hd-route-line hd-route-line-a" />
+                <i className="hd-route-line hd-route-line-b" />
+                <b className="hd-route-pulse" />
+                <article className="hd-destination hd-destination-iacrm">
+                  <small>IMPORTER DANS</small><strong>iACRM</strong><span>Qualifier · scorer · suivre</span>
+                </article>
+                <article className="hd-destination hd-destination-reelsend">
+                  <small>ENVOYER AVEC</small><strong>ReelSend</strong><span>Personnaliser · diffuser · mesurer</span>
+                </article>
+                <a className="hd-mobile-cta" href="#contact">Construire une audience <Arrow diagonal /></a>
+              </div>
+            </div>
+          </div>
+
+          <div className="hd-step-progress" aria-hidden="true">
+            {Array.from({ length: 5 }, (_, index) => <i className={index === 0 ? "is-active" : ""} key={index} />)}
+          </div>
         </div>
       </section>
 
@@ -549,7 +756,7 @@ export default function Home() {
 
       <section className="mos-section" id="mos">
         <div className="mos-intro">
-          <div className="section-kicker"><span>02</span> MOS Marketing</div>
+          <div className="section-kicker"><span>03</span> MOS Marketing</div>
           <div className="mos-heading gsap-reveal">
             <h2>Votre marketing<br /><span>prend vie.</span></h2>
             <div>
@@ -609,7 +816,7 @@ export default function Home() {
         <div className="iacrm-grid" aria-hidden="true" />
         <div className="iacrm-sticky">
           <div className="iacrm-copy">
-            <div className="section-kicker light"><span>03</span> iACRM / Scoring intelligent</div>
+            <div className="section-kicker light"><span>04</span> iACRM / Scoring intelligent</div>
             <h2>Du premier signal<br />au <span>meilleur client.</span></h2>
             <p>iACRM rassemble chaque interaction, mesure le potentiel et fait progresser le contact vers la prochaine action utile.</p>
             <div className="score-readout">
@@ -650,7 +857,7 @@ export default function Home() {
       </section>
 
       <section className="products-section" id="produits">
-        <div className="section-kicker"><span>04</span> Les produits</div>
+        <div className="section-kicker"><span>05</span> Les produits</div>
         <div className="products-title gsap-reveal">
           <h2>Chaque brique est forte.<br />Ensemble, elles deviennent <span>inarrêtables.</span></h2>
         </div>
@@ -672,7 +879,7 @@ export default function Home() {
 
       <section className="impact-section" id="impact">
         <div className="impact-copy">
-          <div className="section-kicker light"><span>05</span> L’impact</div>
+          <div className="section-kicker light"><span>06</span> L’impact</div>
           <h2>Moins de friction.<br /><span>Plus de mouvement.</span></h2>
           <p>Mingler donne à chaque équipe une vision commune et une prochaine action claire.</p>
         </div>
@@ -701,7 +908,7 @@ export default function Home() {
           <span>mingler</span><b>.ai</b>
         </a>
         <p>L’intelligence qui relie acquisition, relation et croissance.</p>
-        <div><a href="#diagnostic">Diagnostic</a><a href="#mos">MOS</a><a href="#produits">Produits</a></div>
+        <div><a href="#diagnostic">Diagnostic</a><a href="#hd-data">HD Data</a><a href="#mos">MOS</a><a href="#produits">Produits</a></div>
         <span>© 2026 Mingler.ai</span>
       </footer>
     </main>
