@@ -231,8 +231,35 @@ export default function Home() {
         mosStory
           .from(".agent-console", { clipPath: "inset(14% 14% 14% 14% round 90px)", scale: 0.88 }, 0)
           .from(".agent-list article", { x: -100, opacity: 0, stagger: 0.09 }, 0.06)
-          .from(".console-orb", { scale: 0.28, rotate: -100, opacity: 0 }, 0.08)
-          .to(".console-orb", { rotate: 130 }, 0.45);
+          .from(".mos-orchestrator", { scale: 0.28, rotate: -100, opacity: 0 }, 0.08)
+          .from(".mos-node", { scale: 0, opacity: 0, stagger: 0.07 }, 0.18)
+          .to(".mos-beams", { rotate: 250 }, 0.28)
+          .to(".mos-packet", { rotate: 480 }, 0.18)
+          .to(".mos-core", { boxShadow: "0 0 90px rgba(255,75,11,.8)", scale: 1.12 }, 0.58);
+
+        const iacrmStory = gsap.timeline({
+          scrollTrigger: {
+            trigger: ".iacrm-section",
+            start: "top top",
+            end: "+=230%",
+            pin: ".iacrm-sticky",
+            scrub: 1.05,
+            anticipatePin: 1,
+          },
+        });
+        iacrmStory
+          .from(".iacrm-copy", { xPercent: -16, opacity: 0.08 }, 0)
+          .from(".pyramid-layer", { y: 150, opacity: 0, scaleX: 0.6, stagger: 0.095, ease: "power2.out" }, 0.04)
+          .fromTo(".cube", { rotationX: -28, rotationY: -50, scale: 0.2 }, { rotationX: 335, rotationY: 405, scale: 1, ease: "none" }, 0.08)
+          .from(".score-orbit", { scale: 0.2, opacity: 0, rotate: -180 }, 0.12)
+          .to(".pyramid-layer", { borderColor: "rgba(255,75,11,.8)", stagger: 0.08 }, 0.28)
+          .from(".score-readout > div", { x: -50, opacity: 0, stagger: 0.08 }, 0.33)
+          .fromTo(".score-value-primary", { textContent: 0 }, { textContent: 89, snap: { textContent: 1 } }, 0.36)
+          .fromTo(".score-meter i", { scaleX: 0 }, { scaleX: 0.89, transformOrigin: "left center" }, 0.4)
+          .from(".client-signal", { y: 60, opacity: 0, scale: 0.7 }, 0.63)
+          .to(".pyramid-layer:not(.level-client)", { opacity: 0.3, stagger: 0.04 }, 0.69)
+          .to(".level-client", { backgroundColor: "#ff4b0b", color: "#fff", scale: 1.06 }, 0.7)
+          .to(".cube", { rotationX: 380, rotationY: 520, scale: 1.12 }, 0.7);
 
         gsap.utils.toArray<HTMLElement>(".product-card").forEach((card, index) => {
           gsap.from(card, {
@@ -297,6 +324,7 @@ export default function Home() {
         <nav className={menuOpen ? "nav-open" : ""} aria-label="Navigation principale">
           <a href="#ecosysteme" onClick={() => setMenuOpen(false)}>Écosystème</a>
           <a href="#mos" onClick={() => setMenuOpen(false)}>MOS</a>
+          <a href="#iacrm" onClick={() => setMenuOpen(false)}>iACRM</a>
           <a href="#produits" onClick={() => setMenuOpen(false)}>Produits</a>
           <a href="#impact" onClick={() => setMenuOpen(false)}>Impact</a>
         </nav>
@@ -419,12 +447,63 @@ export default function Home() {
               </article>
             ))}
           </div>
-          <div className="console-orb" aria-hidden="true"><i /><i /><i /><span>M</span></div>
+          <div className="mos-orchestrator" aria-hidden="true">
+            <div className="mos-beams" />
+            <div className="mos-ring ring-a" />
+            <div className="mos-ring ring-b" />
+            <span className="mos-core">MOS<small>ORCHESTRATEUR</small></span>
+            {agents.map(([number], index) => <i className={`mos-node mos-node-${index + 1}`} key={number}>{number}</i>)}
+            <em className="mos-packet"><b /></em>
+          </div>
+        </div>
+      </section>
+
+      <section className="iacrm-section" id="iacrm">
+        <div className="iacrm-grid" aria-hidden="true" />
+        <div className="iacrm-sticky">
+          <div className="iacrm-copy">
+            <div className="section-kicker light"><span>03</span> iACRM / Scoring intelligent</div>
+            <h2>Du premier signal<br />au <span>meilleur client.</span></h2>
+            <p>iACRM rassemble chaque interaction, mesure le potentiel et fait progresser le contact vers la prochaine action utile.</p>
+            <div className="score-readout">
+              <div><small>SCORE GLOBAL</small><strong><span className="score-value-primary">89</span><sup>/100</sup></strong></div>
+              <div><small>SEGMENT</small><strong>CLIENT A</strong></div>
+              <div><small>PROCHAINE ACTION</small><strong>UPSELL</strong></div>
+            </div>
+            <div className="score-meter"><i /></div>
+          </div>
+
+          <div className="iacrm-visual" aria-label="Pyramide de qualification et cube 3D de scoring client">
+            <div className="score-pyramid">
+              <div className="pyramid-layer level-suspect"><span>01</span><b>SUSPECT</b><small>signal détecté</small></div>
+              <div className="pyramid-layer level-cold"><span>02</span><b>PROSPECT FROID</b><small>profil reconnu</small></div>
+              <div className="pyramid-layer level-warm"><span>03</span><b>PROSPECT TIÈDE</b><small>intérêt mesuré</small></div>
+              <div className="pyramid-layer level-hot"><span>04</span><b>PROSPECT CHAUD</b><small>intention forte</small></div>
+              <div className="pyramid-layer level-client"><span>05</span><b>CLIENT</b><small>valeur activée</small></div>
+            </div>
+
+            <div className="score-orbit"><i /><i /><i /></div>
+            <div className="cube-wrap">
+              <div className="cube">
+                <div className="cube-face cube-front"><small>RÉCENCE</small><strong>92</strong></div>
+                <div className="cube-face cube-back"><small>FRÉQUENCE</small><strong>78</strong></div>
+                <div className="cube-face cube-right"><small>MONTANT</small><strong>86</strong></div>
+                <div className="cube-face cube-left"><small>FIT</small><strong>94</strong></div>
+                <div className="cube-face cube-top"><small>LEAD</small><strong>A</strong></div>
+                <div className="cube-face cube-bottom"><small>CLV</small><strong>4.8K</strong></div>
+              </div>
+              <div className="cube-shadow" />
+            </div>
+
+            <div className="client-signal">
+              <i>MK</i><span><small>CONTACT QUALIFIÉ</small><strong>Marie K. — Client A</strong></span><b>89</b>
+            </div>
+          </div>
         </div>
       </section>
 
       <section className="products-section" id="produits">
-        <div className="section-kicker"><span>03</span> Les produits</div>
+        <div className="section-kicker"><span>04</span> Les produits</div>
         <div className="products-title gsap-reveal">
           <h2>Chaque brique est forte.<br />Ensemble, elles deviennent <span>inarrêtables.</span></h2>
         </div>
@@ -446,7 +525,7 @@ export default function Home() {
 
       <section className="impact-section" id="impact">
         <div className="impact-copy">
-          <div className="section-kicker light"><span>04</span> L’impact</div>
+          <div className="section-kicker light"><span>05</span> L’impact</div>
           <h2>Moins de friction.<br /><span>Plus de mouvement.</span></h2>
           <p>Mingler donne à chaque équipe une vision commune et une prochaine action claire.</p>
         </div>
