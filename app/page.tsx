@@ -48,15 +48,15 @@ const ecosystem = [
 ];
 
 const agents = [
-  { id: "market", number: "01", phase: "INPUT", title: "Étude marché & Data", detail: "Tendances · audiences · signaux" },
-  { id: "strategy", number: "02", phase: "CADRAGE", title: "Stratégie & SCP", detail: "Segmentation · ciblage · positionnement" },
-  { id: "orchestrator", number: "03", phase: "ORCHESTRATION", title: "Concepteur opérationnel & orchestrateur éditorial", detail: "Briefs · planning · validation" },
-  { id: "ads", number: "04", phase: "ACTIVATION", title: "Ads Manager", detail: "Media plan · budget · optimisation", branch: true },
-  { id: "content", number: "05", phase: "CRÉATION", title: "Création de contenu multimédia", detail: "Concepts · formats · déclinaisons", branch: true },
-  { id: "email", number: "06", phase: "RELATION", title: "Email Marketing", detail: "Séquences · personnalisation · relance", branch: true },
-  { id: "community", number: "07", phase: "CONVERSATION", title: "Community Manager", detail: "Écoute · engagement · modération", branch: true },
-  { id: "publishing", number: "08", phase: "SORTIE", title: "Diffusion & Publishing", detail: "Planification · contrôle · publication" },
-  { id: "performance", number: "09", phase: "BOUCLE", title: "Performance & Décision", detail: "Attribution · apprentissage · arbitrage" },
+  { id: "market", title: "Étude marché & Data" },
+  { id: "strategy", title: "Stratégie & SCP" },
+  { id: "orchestrator", title: "Concepteur opérationnel & orchestrateur éditorial" },
+  { id: "ads", title: "Ads Manager", branch: true },
+  { id: "content", title: "Création de contenu multimédia", branch: true },
+  { id: "email", title: "Email Marketing", branch: true },
+  { id: "community", title: "Community Manager", branch: true },
+  { id: "publishing", title: "Diffusion & Publishing" },
+  { id: "performance", title: "Performance & Décision" },
 ];
 
 const metrics = [
@@ -298,27 +298,55 @@ export default function Home() {
           .fromTo(".diagnostic-answer-line i", { scaleX: 0 }, { scaleX: 1, transformOrigin: "left center", duration: 0.36 }, 3.38)
           .from(".diagnostic-answer p, .diagnostic-answer a", { y: 24, opacity: 0, stagger: 0.08, duration: 0.28 }, 3.46);
 
+        const mosStage = document.querySelector<HTMLElement>(".mos-stage-current");
+        const mosDots = gsap.utils.toArray<HTMLElement>(".mos-step-dots i");
+        const setMosStage = (progress: number) => {
+          const stage = Math.min(6, Math.floor(progress * 6) + 1);
+          if (mosStage) mosStage.textContent = String(stage).padStart(2, "0");
+          mosDots.forEach((dot, index) => dot.classList.toggle("is-active", index < stage));
+        };
+        const setMosFullscreen = (active: boolean) => rootRef.current?.classList.toggle("mos-stage-active", active);
+
+        gsap.set(".flow-agent, .flow-trigger, .flow-wire, .flow-feedback, .human-gate, .flow-legend", { autoAlpha: 0 });
+        gsap.set(".flow-agent", { y: 28, scale: 0.84 });
+        gsap.set(".flow-wire-x", { scaleX: 0, transformOrigin: "left center" });
+        gsap.set(".flow-wire-y", { scaleY: 0, transformOrigin: "top center" });
+
         const mosStory = gsap.timeline({
-          scrollTrigger: { trigger: ".mos-flow-shell", start: "top 84%", end: "bottom 44%", scrub: 0.9 },
+          scrollTrigger: {
+            trigger: ".mos-flow-sticky",
+            start: "top top",
+            end: "+=600%",
+            pin: ".mos-flow-sticky",
+            scrub: 1,
+            anticipatePin: 1,
+            onEnter: () => setMosFullscreen(true),
+            onEnterBack: () => setMosFullscreen(true),
+            onLeave: () => setMosFullscreen(false),
+            onLeaveBack: () => setMosFullscreen(false),
+            onUpdate: (self) => setMosStage(self.progress),
+          },
         });
         mosStory
-          .from(".mos-flow-shell", { clipPath: "inset(12% 10% 12% 10% round 70px)", scale: 0.9, duration: 0.22 }, 0)
-          .from(".flow-trigger", { y: -30, opacity: 0, duration: 0.14 }, 0.04)
-          .from(".agent-market", { x: -75, opacity: 0, scale: 0.82, duration: 0.16 }, 0.08)
-          .from(".wire-entry", { scaleX: 0, transformOrigin: "left center", stagger: 0.07, duration: 0.16 }, 0.14)
-          .from(".agent-strategy, .agent-orchestrator", { y: 55, opacity: 0, scale: 0.82, stagger: 0.1, duration: 0.18 }, 0.2)
-          .from(".wire-branch-spine", { scaleY: 0, transformOrigin: "center center", duration: 0.22 }, 0.34)
-          .from(".wire-branch", { scaleX: 0, transformOrigin: "left center", stagger: 0.035, duration: 0.14 }, 0.38)
-          .from(".flow-agent-branch", { x: -44, opacity: 0, scale: 0.82, stagger: 0.055, duration: 0.18 }, 0.42)
-          .from(".wire-merge-spine", { scaleY: 0, transformOrigin: "center center", duration: 0.22 }, 0.57)
-          .from(".wire-merge", { scaleX: 0, transformOrigin: "left center", stagger: 0.035, duration: 0.14 }, 0.6)
-          .from(".agent-publishing", { x: -48, opacity: 0, scale: 0.82, duration: 0.18 }, 0.68)
-          .from(".wire-output", { scaleX: 0, transformOrigin: "left center", duration: 0.16 }, 0.74)
-          .from(".agent-performance", { x: -48, opacity: 0, scale: 0.82, duration: 0.18 }, 0.78)
-          .from(".flow-feedback", { opacity: 0, scaleX: 0.72, transformOrigin: "right center", stagger: 0.06, duration: 0.2 }, 0.84)
-          .from(".human-gate", { y: 18, opacity: 0, duration: 0.12 }, 0.88)
-          .to(".agent-orchestrator", { boxShadow: "0 0 55px rgba(255,75,11,.3)", duration: 0.18 }, 0.9)
-          .from(".flow-legend", { y: 20, opacity: 0, duration: 0.12 }, 0.92);
+          .to(".flow-trigger", { autoAlpha: 1, y: 0, duration: 0.22 }, 0)
+          .to(".agent-market", { autoAlpha: 1, y: 0, scale: 1, duration: 0.42, ease: "back.out(1.35)" }, 0.18)
+          .to(".wire-entry-a", { autoAlpha: 1, scaleX: 1, duration: 0.28 }, 0.74)
+          .to(".agent-strategy", { autoAlpha: 1, y: 0, scale: 1, duration: 0.42, ease: "back.out(1.35)" }, 0.9)
+          .to(".wire-entry-b", { autoAlpha: 1, scaleX: 1, duration: 0.28 }, 1.46)
+          .to(".agent-orchestrator", { autoAlpha: 1, y: 0, scale: 1, duration: 0.46, ease: "back.out(1.35)" }, 1.62)
+          .to(".wire-entry-c", { autoAlpha: 1, scaleX: 1, duration: 0.28 }, 2.16)
+          .to(".wire-branch-spine", { autoAlpha: 1, scaleY: 1, duration: 0.42 }, 2.34)
+          .to(".wire-branch", { autoAlpha: 1, scaleX: 1, stagger: 0.1, duration: 0.25 }, 2.48)
+          .to(".flow-agent-branch", { autoAlpha: 1, y: 0, scale: 1, stagger: 0.18, duration: 0.36, ease: "back.out(1.25)" }, 2.62)
+          .to(".wire-merge-spine", { autoAlpha: 1, scaleY: 1, duration: 0.4 }, 3.54)
+          .to(".wire-merge", { autoAlpha: 1, scaleX: 1, stagger: 0.07, duration: 0.22 }, 3.68)
+          .to(".human-gate", { autoAlpha: 1, y: 0, duration: 0.28 }, 3.92)
+          .to(".agent-publishing", { autoAlpha: 1, y: 0, scale: 1, duration: 0.44, ease: "back.out(1.35)" }, 4.04)
+          .to(".wire-output", { autoAlpha: 1, scaleX: 1, duration: 0.3 }, 4.6)
+          .to(".agent-performance", { autoAlpha: 1, y: 0, scale: 1, duration: 0.44, ease: "back.out(1.35)" }, 4.78)
+          .to(".flow-feedback", { autoAlpha: 1, scaleX: 1, transformOrigin: "right center", stagger: 0.12, duration: 0.38 }, 5.18)
+          .to(".flow-legend", { autoAlpha: 1, y: 0, duration: 0.24 }, 5.34)
+          .to(".agent-orchestrator", { boxShadow: "0 0 80px rgba(255,75,11,.48)", duration: 0.34 }, 5.36);
 
         const iacrmStory = gsap.timeline({
           scrollTrigger: {
@@ -362,6 +390,8 @@ export default function Home() {
             scrollTrigger: { trigger: card, start: "top 90%", end: "top 48%", scrub: 0.7 },
           });
         });
+
+        return () => setMosFullscreen(false);
       });
 
       gsap.utils.toArray<HTMLElement>(".gsap-reveal").forEach((element) => {
@@ -550,57 +580,59 @@ export default function Home() {
       </div>
 
       <section className="mos-section" id="mos">
-        <div className="section-kicker"><span>02</span> MOS Marketing</div>
-        <div className="mos-heading gsap-reveal">
-          <h2>Votre marketing<br /><span>prend vie.</span></h2>
-          <div>
-            <p>Neuf agents spécialisés transforment chaque signal marché en stratégie, contenus, diffusion et décisions mesurables.</p>
-            <a href="#contact">Découvrir le MOS <Arrow /></a>
+        <div className="mos-intro">
+          <div className="section-kicker"><span>02</span> MOS Marketing</div>
+          <div className="mos-heading gsap-reveal">
+            <h2>Votre marketing<br /><span>prend vie.</span></h2>
+            <div>
+              <p>Neuf agents spécialisés transforment chaque signal marché en stratégie, contenus, diffusion et décisions mesurables.</p>
+              <a href="#contact">Découvrir le MOS <Arrow /></a>
+            </div>
           </div>
         </div>
 
-        <div className="mos-flow-shell">
-          <div className="console-top">
-            <span><i /> MOS / WORKFLOW ACTIF</span>
-            <span>9 AGENTS · 1 BOUCLE D’APPRENTISSAGE</span>
-          </div>
-          <div className="mos-flow-viewport">
-            <div className="mos-flow-canvas" aria-label="Workflow des neuf agents du Marketing Operating System">
-              <div className="flow-trigger"><span>⚡</span><div><small>TRIGGER</small><strong>Nouveau signal marché</strong></div><b>LIVE</b></div>
+        <div className="mos-flow-sticky">
+          <div className="mos-flow-shell">
+            <div className="console-top">
+              <span><i /> MOS / WORKFLOW ACTIF</span>
+              <span className="mos-stage-label">ÉTAPE <strong className="mos-stage-current">01</strong><b>/06</b></span>
+            </div>
+            <div className="mos-flow-viewport">
+              <div className="mos-flow-canvas" aria-label="Workflow des neuf agents du Marketing Operating System">
+                <div className="flow-trigger"><span>⚡</span><div><small>TRIGGER</small><strong>Nouveau signal marché</strong></div><b>LIVE</b></div>
 
-              <div className="flow-wires" aria-hidden="true">
-                <i className="flow-wire flow-wire-x wire-entry wire-entry-a" />
-                <i className="flow-wire flow-wire-x wire-entry wire-entry-b" />
-                <i className="flow-wire flow-wire-x wire-entry wire-entry-c" />
-                <i className="flow-wire flow-wire-y wire-branch-spine" />
-                <i className="flow-wire flow-wire-x wire-branch wire-branch-a" />
-                <i className="flow-wire flow-wire-x wire-branch wire-branch-b" />
-                <i className="flow-wire flow-wire-x wire-branch wire-branch-c" />
-                <i className="flow-wire flow-wire-x wire-branch wire-branch-d" />
-                <i className="flow-wire flow-wire-y wire-merge-spine" />
-                <i className="flow-wire flow-wire-x wire-merge wire-merge-a" />
-                <i className="flow-wire flow-wire-x wire-merge wire-merge-b" />
-                <i className="flow-wire flow-wire-x wire-merge wire-merge-c" />
-                <i className="flow-wire flow-wire-x wire-merge wire-merge-d" />
-                <i className="flow-wire flow-wire-x wire-merge wire-merge-output" />
-                <i className="flow-wire flow-wire-x wire-output" />
-                <i className="flow-feedback feedback-outer" />
-                <i className="flow-feedback feedback-inner" />
+                <div className="flow-wires" aria-hidden="true">
+                  <i className="flow-wire flow-wire-x wire-entry wire-entry-a" />
+                  <i className="flow-wire flow-wire-x wire-entry wire-entry-b" />
+                  <i className="flow-wire flow-wire-x wire-entry wire-entry-c" />
+                  <i className="flow-wire flow-wire-y wire-branch-spine" />
+                  <i className="flow-wire flow-wire-x wire-branch wire-branch-a" />
+                  <i className="flow-wire flow-wire-x wire-branch wire-branch-b" />
+                  <i className="flow-wire flow-wire-x wire-branch wire-branch-c" />
+                  <i className="flow-wire flow-wire-x wire-branch wire-branch-d" />
+                  <i className="flow-wire flow-wire-y wire-merge-spine" />
+                  <i className="flow-wire flow-wire-x wire-merge wire-merge-a" />
+                  <i className="flow-wire flow-wire-x wire-merge wire-merge-b" />
+                  <i className="flow-wire flow-wire-x wire-merge wire-merge-c" />
+                  <i className="flow-wire flow-wire-x wire-merge wire-merge-d" />
+                  <i className="flow-wire flow-wire-x wire-merge wire-merge-output" />
+                  <i className="flow-wire flow-wire-x wire-output" />
+                  <i className="flow-feedback feedback-outer" />
+                  <i className="flow-feedback feedback-inner" />
+                </div>
+
+                {agents.map(({ id, title, branch }) => (
+                  <article className={`flow-agent agent-${id}${branch ? " flow-agent-branch" : ""}${id === "orchestrator" ? " is-orchestrator" : ""}`} key={id}>
+                    <h3>{title}</h3>
+                  </article>
+                ))}
+
+                <div className="human-gate"><span>✓</span><div><small>HUMAN GATE</small><strong>Validation avant diffusion</strong></div></div>
+                <div className="flow-legend"><span><i /> Signal transmis</span><span><i /> Boucle d’apprentissage</span></div>
               </div>
-
-              {agents.map(({ id, number, phase, title, detail, branch }) => (
-                <article className={`flow-agent agent-${id}${branch ? " flow-agent-branch" : ""}${id === "orchestrator" ? " is-orchestrator" : ""}`} key={id}>
-                  <div className="flow-agent-top"><span>{number}</span><small>{phase}</small></div>
-                  <div className="agent-avatar" aria-hidden="true"><i>AI</i><b /><b /><b /></div>
-                  <h3><small>Agent IA</small>{title}</h3>
-                  <p>{detail}</p>
-                  <div className="agent-progress"><i /></div>
-                  <div className="agent-live"><i /> ACTIF</div>
-                </article>
-              ))}
-
-              <div className="human-gate"><span>✓</span><div><small>HUMAN GATE</small><strong>Validation avant diffusion</strong></div></div>
-              <div className="flow-legend"><span><i /> Signal transmis</span><span><i /> Boucle d’apprentissage</span></div>
+            </div>
+            <div className="mos-step-dots" aria-hidden="true">
+              {Array.from({ length: 6 }, (_, index) => <i className={index === 0 ? "is-active" : ""} key={index} />)}
             </div>
           </div>
         </div>
