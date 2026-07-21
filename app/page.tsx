@@ -4,9 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
-import dynamic from "next/dynamic";
-
-const MinglerScene = dynamic(() => import("./MinglerScene"), { ssr: false });
 
 const ecosystem = [
   {
@@ -108,94 +105,8 @@ function Arrow({ diagonal = false }: { diagonal?: boolean }) {
   return <span aria-hidden="true">{diagonal ? "↗" : "→"}</span>;
 }
 
-function SignalCanvas() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const context = canvas.getContext("2d");
-    if (!context) return;
-
-    let animation = 0;
-    let width = 0;
-    let height = 0;
-    const pointer = { x: 0.67, y: 0.44 };
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    const resize = () => {
-      const ratio = Math.min(window.devicePixelRatio || 1, 2);
-      width = canvas.clientWidth;
-      height = canvas.clientHeight;
-      canvas.width = width * ratio;
-      canvas.height = height * ratio;
-      context.setTransform(ratio, 0, 0, ratio, 0, 0);
-    };
-
-    const onPointer = (event: PointerEvent) => {
-      pointer.x += (event.clientX / window.innerWidth - pointer.x) * 0.25;
-      pointer.y += (event.clientY / window.innerHeight - pointer.y) * 0.25;
-    };
-
-    const points = Array.from({ length: 58 }, (_, index) => ({
-      angle: (Math.PI * 2 * index) / 58,
-      radius: 130 + ((index * 47) % 290),
-      speed: 0.000045 + (index % 7) * 0.000006,
-      size: 0.7 + (index % 4) * 0.42,
-      opacity: 0.12 + (index % 5) * 0.045,
-    }));
-
-    const render = (time: number) => {
-      context.clearRect(0, 0, width, height);
-      const cx = width * pointer.x;
-      const cy = height * pointer.y;
-
-      const glow = context.createRadialGradient(cx, cy, 10, cx, cy, Math.min(width, height) * 0.56);
-      glow.addColorStop(0, "rgba(255, 75, 11, 0.17)");
-      glow.addColorStop(0.42, "rgba(255, 145, 91, 0.07)");
-      glow.addColorStop(1, "rgba(255, 255, 255, 0)");
-      context.fillStyle = glow;
-      context.fillRect(0, 0, width, height);
-
-      points.forEach((point, index) => {
-        const a = point.angle + (reduced ? 0 : time * point.speed);
-        const orbitX = cx + Math.cos(a) * point.radius * 1.45;
-        const orbitY = cy + Math.sin(a) * point.radius * 0.58;
-        context.beginPath();
-        context.fillStyle = `rgba(255, 75, 11, ${point.opacity})`;
-        context.arc(orbitX, orbitY, point.size, 0, Math.PI * 2);
-        context.fill();
-
-        if (index % 9 === 0) {
-          context.beginPath();
-          context.strokeStyle = "rgba(255, 75, 11, .055)";
-          context.lineWidth = 1;
-          context.ellipse(cx, cy, point.radius * 1.45, point.radius * 0.58, 0, 0, Math.PI * 2);
-          context.stroke();
-        }
-      });
-
-      animation = requestAnimationFrame(render);
-    };
-
-    resize();
-    window.addEventListener("resize", resize);
-    window.addEventListener("pointermove", onPointer);
-    animation = requestAnimationFrame(render);
-
-    return () => {
-      cancelAnimationFrame(animation);
-      window.removeEventListener("resize", resize);
-      window.removeEventListener("pointermove", onPointer);
-    };
-  }, []);
-
-  return <canvas ref={canvasRef} className="signal-canvas" aria-hidden="true" />;
-}
-
 export default function Home() {
   const rootRef = useRef<HTMLElement>(null);
-  const [activeNode, setActiveNode] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -228,10 +139,9 @@ export default function Home() {
     const context = gsap.context(() => {
       gsap.timeline({ delay: 1.05, defaults: { ease: "power4.out" } })
         .from(".site-header", { y: -90, opacity: 0, duration: 1 })
-        .from(".hero .eyebrow", { y: 24, opacity: 0, duration: 0.7 }, "-=.55")
-        .from(".hero-line > i", { yPercent: 118, duration: 1.15, stagger: 0.1 }, "-=.55")
-        .from(".hero-lead, .hero-actions, .hero-proof", { y: 30, opacity: 0, duration: 0.85, stagger: 0.09 }, "-=.75")
-        .from(".orbit-stage", { scale: 0.72, opacity: 0, rotate: -8, duration: 1.35 }, "-=1.1");
+        .from(".hero-reference-image", { scale: 1.09, opacity: 0, filter: "blur(16px)", duration: 1.45 }, "-=.72")
+        .from(".hero-mobile-copy > *", { y: 28, opacity: 0, stagger: 0.1, duration: 0.75 }, "-=.78")
+        .from(".scroll-cue", { y: 20, opacity: 0, duration: 0.65 }, "-=.52");
 
       const desktop = gsap.matchMedia();
       desktop.add("(min-width: 900px)", () => {
@@ -239,21 +149,21 @@ export default function Home() {
           scrollTrigger: {
             trigger: ".hero",
             start: "top top",
-            end: "+=185%",
+            end: "+=230%",
             pin: true,
             scrub: 1.15,
             anticipatePin: 1,
           },
         });
         heroStory
-          .to(".hero-copy", { xPercent: -24, yPercent: -8, opacity: 0.04, ease: "power2.in" }, 0)
-          .to(".orbit-stage", { xPercent: -43, yPercent: 4, scale: 1.75, rotate: 9, ease: "power2.inOut" }, 0)
-          .to(".satellite", { x: (index) => (index % 2 ? 180 : -180), y: (index) => (index < 2 ? -100 : 110), opacity: 0, scale: 0.55, stagger: 0.035 }, 0.08)
-          .to(".orbit-detail, .hero-proof, .scroll-cue", { opacity: 0, y: 24 }, 0.05)
-          .fromTo(".hero-transition-word", { opacity: 0, scale: 0.55 }, { opacity: 1, scale: 1, duration: 0.42, ease: "power2.out" }, 0.42)
-          .to(".hero-transition-word span", { letterSpacing: "0.02em", duration: 0.45 }, 0.5)
-          .to(".orbit-stage", { opacity: 0.18, scale: 2.3, duration: 0.32 }, 0.68)
-          .to(".hero-transition-word", { opacity: 0, scale: 1.18, duration: 0.2 }, 0.86);
+          .to(".hero-reference-image", { scale: 3.35, xPercent: -9.5, yPercent: 1.5, filter: "saturate(1.2) contrast(1.08)", ease: "power2.inOut", duration: 0.72 }, 0)
+          .to(".hero-zoom-vignette", { opacity: 1, scale: 1.12, duration: 0.58 }, 0.08)
+          .to(".hero-mobile-copy, .scroll-cue", { opacity: 0, y: 28, duration: 0.24 }, 0.04)
+          .fromTo(".hero-transition-word", { opacity: 0, scale: 0.46 }, { opacity: 1, scale: 1, duration: 0.34, ease: "power3.out" }, 0.58)
+          .to(".hero-transition-word span", { letterSpacing: "0.015em", duration: 0.36 }, 0.62)
+          .to(".hero-reference-image", { scale: 4.15, opacity: 0.12, filter: "blur(8px) saturate(1.35)", duration: 0.28 }, 0.72)
+          .to(".hero-zoom-vignette", { backgroundColor: "rgba(5,4,3,.92)", duration: 0.26 }, 0.72)
+          .to(".hero-transition-word", { opacity: 0, scale: 1.2, duration: 0.2 }, 0.9);
 
         const questionCards = gsap.utils.toArray<HTMLElement>(".diagnostic-question");
         const diagnosticAnswer = document.querySelector<HTMLElement>(".diagnostic-answer");
@@ -540,59 +450,18 @@ export default function Home() {
         </button>
       </header>
 
-      <section className="hero" id="top">
-        <SignalCanvas />
-        <div className="hero-copy">
-          <p className="eyebrow"><i /> Le problème n’est pas le nombre d’outils</p>
-          <h1>
-            <span className="hero-line"><i>Vos outils savent.</i></span>
-            <span className="hero-line"><i>Votre croissance</i></span>
-            <span className="hero-line accent"><i>oublie.</i></span>
-          </h1>
-          <p className="hero-lead">
-            Chaque équipe capte une partie de l’histoire client. Mais entre deux outils, deux équipes ou deux étapes, le contexte se perd — et la prochaine action devient moins précise.
-          </p>
-          <div className="hero-actions">
-            <a className="button button-primary" href="#diagnostic">Faire le test <Arrow /></a>
-            <a className="button button-secondary" href="#contact">Voir Mingler en action <Arrow diagonal /></a>
-          </div>
-          <div className="hero-proof">
-            <span><b>01</b> Source perdue</span>
-            <span><b>02</b> Relance manuelle</span>
-            <span><b>03</b> Contexte dispersé</span>
-          </div>
+      <section className="hero" id="top" aria-labelledby="hero-title">
+        <h1 className="hero-accessible-title" id="hero-title">MINGLER — Chaque signal devient une action.</h1>
+        <div className="hero-reference-frame" aria-hidden="true">
+          <img className="hero-reference-image" src="/mingler-hero-orbit.png" alt="" />
+          <div className="hero-zoom-vignette" />
         </div>
-
-        <div className="orbit-stage" aria-label="Écosystème interactif Mingler">
-          <MinglerScene />
-          <div className="orbit orbit-one" />
-          <div className="orbit orbit-two" />
-          <div className="orbit orbit-three" />
-          <div className="core-halo" />
-          <button className="core" type="button" onClick={() => setActiveNode(3)}>
-            <span className="brand-mark" aria-hidden="true" />
-            <strong>UNE HISTOIRE<br />CLIENT COMMUNE</strong>
-            <small>iACRM</small>
-          </button>
-          {ecosystem.map((item, index) => (
-            <button
-              key={item.id}
-              type="button"
-              className={`satellite satellite-${index + 1} ${activeNode === index ? "active" : ""}`}
-              onClick={() => setActiveNode(index)}
-              aria-pressed={activeNode === index}
-            >
-              <em>{item.short}</em>
-              <span><strong>{item.name}</strong><small>{item.label}</small></span>
-            </button>
-          ))}
-          <div className="orbit-detail" aria-live="polite">
-            <span>{ecosystem[activeNode].stat}</span>
-            <p>{ecosystem[activeNode].description}</p>
-          </div>
+        <div className="hero-mobile-copy">
+          <strong>MINGLER</strong>
+          <p>Chaque signal devient une <em>action.</em></p>
         </div>
         <div className="hero-transition-word" aria-hidden="true"><small>UNE MÉMOIRE.</small><span>TOUT EST RELIÉ</span></div>
-        <a className="scroll-cue" href="#diagnostic"><span /> Faire le test</a>
+        <a className="scroll-cue" href="#diagnostic"><span /> Entrer dans Mingler</a>
       </section>
 
       <section className="diagnostic-section" id="diagnostic" aria-labelledby="diagnostic-title">
