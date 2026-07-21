@@ -241,25 +241,33 @@ export default function Home() {
           scrollTrigger: {
             trigger: ".iacrm-section",
             start: "top top",
-            end: "+=230%",
+            end: "+=360%",
             pin: ".iacrm-sticky",
             scrub: 1.05,
             anticipatePin: 1,
           },
         });
         iacrmStory
-          .from(".iacrm-copy", { xPercent: -16, opacity: 0.08 }, 0)
-          .from(".pyramid-layer", { y: 150, opacity: 0, scaleX: 0.6, stagger: 0.095, ease: "power2.out" }, 0.04)
-          .fromTo(".cube", { rotationX: -28, rotationY: -50, scale: 0.2 }, { rotationX: 335, rotationY: 405, scale: 1, ease: "none" }, 0.08)
-          .from(".score-orbit", { scale: 0.2, opacity: 0, rotate: -180 }, 0.12)
-          .to(".pyramid-layer", { borderColor: "rgba(255,75,11,.8)", stagger: 0.08 }, 0.28)
-          .from(".score-readout > div", { x: -50, opacity: 0, stagger: 0.08 }, 0.33)
-          .fromTo(".score-value-primary", { textContent: 0 }, { textContent: 89, snap: { textContent: 1 } }, 0.36)
-          .fromTo(".score-meter i", { scaleX: 0 }, { scaleX: 0.89, transformOrigin: "left center" }, 0.4)
-          .from(".client-signal", { y: 60, opacity: 0, scale: 0.7 }, 0.63)
-          .to(".pyramid-layer:not(.level-client)", { opacity: 0.3, stagger: 0.04 }, 0.69)
-          .to(".level-client", { backgroundColor: "#ff4b0b", color: "#fff", scale: 1.06 }, 0.7)
-          .to(".cube", { rotationX: 380, rotationY: 520, scale: 1.12 }, 0.7);
+          .from(".iacrm-copy", { xPercent: -16, opacity: 0.08, duration: 0.16 }, 0)
+          .fromTo(".cube", { rotationX: -18, rotationY: 28, scale: 1 }, { rotationX: 335, rotationY: 405, scale: 1, duration: 1.04, ease: "none" }, 0)
+          .from(".score-orbit", { opacity: 0, rotate: -90, duration: 0.14 }, 0)
+          .fromTo(".level-suspect", { y: 110, opacity: 0, scaleX: 0.72 }, { y: 0, opacity: 1, scaleX: 1, duration: 0.1, ease: "power2.out" }, 0.05)
+          .to(".level-suspect", { borderColor: "rgba(255,75,11,.8)", duration: 0.06 }, 0.13)
+          .fromTo(".level-cold", { y: 110, opacity: 0, scaleX: 0.72 }, { y: 0, opacity: 1, scaleX: 1, duration: 0.1, ease: "power2.out" }, 0.22)
+          .to(".level-cold", { borderColor: "rgba(255,75,11,.8)", duration: 0.06 }, 0.3)
+          .fromTo(".level-warm", { y: 110, opacity: 0, scaleX: 0.72 }, { y: 0, opacity: 1, scaleX: 1, duration: 0.1, ease: "power2.out" }, 0.39)
+          .to(".level-warm", { borderColor: "rgba(255,75,11,.8)", duration: 0.06 }, 0.47)
+          .fromTo(".level-hot", { y: 110, opacity: 0, scaleX: 0.72 }, { y: 0, opacity: 1, scaleX: 1, duration: 0.1, ease: "power2.out" }, 0.56)
+          .to(".level-hot", { borderColor: "rgba(255,75,11,.8)", duration: 0.06 }, 0.64)
+          .fromTo(".level-client", { y: 110, opacity: 0, scaleX: 0.72 }, { y: 0, opacity: 1, scaleX: 1, duration: 0.1, ease: "power2.out" }, 0.73)
+          .to(".level-client", { borderColor: "rgba(255,75,11,.95)", duration: 0.06 }, 0.81)
+          .from(".score-readout > div", { x: -50, opacity: 0, duration: 0.12, stagger: 0.045 }, 0.82)
+          .fromTo(".score-value-primary", { textContent: 0 }, { textContent: 89, snap: { textContent: 1 }, duration: 0.16 }, 0.84)
+          .fromTo(".score-meter i", { scaleX: 0 }, { scaleX: 0.89, transformOrigin: "left center", duration: 0.16 }, 0.84)
+          .from(".client-signal", { y: 60, opacity: 0, scale: 0.7, duration: 0.12 }, 0.99)
+          .to(".pyramid-layer:not(.level-client)", { opacity: 0.3, duration: 0.1, stagger: 0.018 }, 1.03)
+          .to(".level-client", { backgroundColor: "#ff4b0b", color: "#fff", scale: 1.06, duration: 0.1 }, 1.04)
+          .to(".cube", { rotationX: 380, rotationY: 520, scale: 1.08, duration: 0.12 }, 1.04);
 
         gsap.utils.toArray<HTMLElement>(".product-card").forEach((card, index) => {
           gsap.from(card, {
