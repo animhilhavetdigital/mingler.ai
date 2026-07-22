@@ -158,7 +158,7 @@ export default function Home() {
           .fromTo(
             ".hero-reference-image",
             { scale: 1, xPercent: 0, yPercent: 0, opacity: 1, filter: "saturate(1) contrast(1) blur(0px)" },
-            { scale: 3.35, xPercent: -9.5, yPercent: 1.5, opacity: 1, filter: "saturate(1.2) contrast(1.08) blur(0px)", ease: "power2.inOut", duration: 0.72, immediateRender: true },
+            { scale: 3.35, xPercent: -21.5, yPercent: 5.4, opacity: 1, filter: "saturate(1.2) contrast(1.08) blur(0px)", ease: "power2.inOut", duration: 0.72, immediateRender: true },
             0,
           )
           .fromTo(".hero-zoom-vignette", { opacity: 0, scale: 0.82 }, { opacity: 1, scale: 1.12, duration: 0.58, immediateRender: true }, 0.08)
