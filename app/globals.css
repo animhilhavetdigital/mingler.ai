@@ -398,17 +398,17 @@ nav a:hover { color: var(--orange); }
 .score-meter { height: 3px; margin-top: 12px; background: rgba(255,255,255,.11); overflow: hidden; }
 .score-meter i { display: block; width: 100%; height: 100%; background: linear-gradient(90deg, var(--peach), var(--orange)); box-shadow: 0 0 18px var(--orange); transform-origin: left center; }
 .iacrm-visual { position: relative; height: min(760px, 82vh); perspective: 1400px; transform-style: preserve-3d; }
-.score-pyramid { position: absolute; left: 50%; bottom: 2%; width: 690px; height: 540px; transform: translateX(-50%); filter: drop-shadow(0 35px 55px rgba(0,0,0,.45)); }
-.pyramid-layer { position: absolute; left: 50%; height: 88px; padding: 20px 13%; display: grid; grid-template-columns: 40px 1fr auto; align-items: center; color: rgba(255,255,255,.82); border: 1px solid rgba(255,177,140,.25); background: linear-gradient(100deg, rgba(255,75,11,.14), rgba(255,255,255,.045)); backdrop-filter: blur(8px); clip-path: polygon(9% 0, 91% 0, 100% 100%, 0 100%); transform: translateX(-50%); transform-origin: center bottom; }
+.score-pyramid { position: absolute; left: 50%; bottom: 0; width: 690px; height: 540px; transform: translateX(-50%); filter: drop-shadow(0 35px 55px rgba(0,0,0,.45)); }
+.pyramid-layer { position: absolute; left: 50%; height: 76px; padding: 12px 12%; display: grid; grid-template-columns: 34px minmax(0,1fr) minmax(70px,.62fr); align-items: center; column-gap: 10px; color: rgba(255,255,255,.82); border: 1px solid rgba(255,177,140,.25); background: linear-gradient(100deg, rgba(255,75,11,.14), rgba(255,255,255,.045)); backdrop-filter: blur(8px); clip-path: polygon(9% 0, 91% 0, 100% 100%, 0 100%); transform: translateX(-50%); transform-origin: center bottom; }
 .pyramid-layer span { color: var(--orange); font-family: var(--font-geist-mono); font-size: 8px; }
-.pyramid-layer b { font-size: 12px; letter-spacing: .045em; }
-.pyramid-layer small { color: #837f7b; font-size: 8px; }
+.pyramid-layer b { font-size: 12px; line-height: 1.15; letter-spacing: .045em; }
+.pyramid-layer small { color: #928d88; font-size: 7px; line-height: 1.25; text-align: right; }
 .level-suspect { width: 680px; bottom: 0; z-index: 1; }
-.level-cold { width: 570px; bottom: 79px; z-index: 2; }
-.level-warm { width: 465px; bottom: 158px; z-index: 3; }
-.level-hot { width: 360px; bottom: 237px; z-index: 4; }
-.level-client { width: 255px; bottom: 316px; z-index: 5; color: white; background: rgba(255,75,11,.3); }
-.score-orbit { position: absolute; z-index: 6; left: 53%; top: 30%; width: 320px; height: 320px; transform: translate(-50%,-50%); border: 1px solid rgba(255,75,11,.28); border-radius: 50%; box-shadow: 0 0 90px rgba(255,75,11,.12), inset 0 0 55px rgba(255,75,11,.06); }
+.level-cold { width: 575px; bottom: 82px; z-index: 2; }
+.level-warm { width: 470px; bottom: 164px; z-index: 3; }
+.level-hot { width: 365px; bottom: 246px; z-index: 4; }
+.level-client { width: 270px; bottom: 328px; z-index: 5; color: white; background: rgba(255,75,11,.3); }
+.score-orbit { position: absolute; z-index: 6; left: 53%; top: 27.5%; width: 320px; height: 320px; transform: translate(-50%,-50%); border: 1px solid rgba(255,75,11,.28); border-radius: 50%; box-shadow: 0 0 90px rgba(255,75,11,.12), inset 0 0 55px rgba(255,75,11,.06); }
 .score-orbit::before, .score-orbit::after { content: ""; position: absolute; border: 1px dashed rgba(255,177,140,.2); border-radius: 50%; }
 .score-orbit::before { inset: 36px; }
 .score-orbit::after { inset: -58px; }
@@ -416,7 +416,7 @@ nav a:hover { color: var(--orange); }
 .score-orbit i:nth-child(1) { left: 12%; top: 13%; }
 .score-orbit i:nth-child(2) { right: -1%; top: 50%; }
 .score-orbit i:nth-child(3) { left: 40%; bottom: -2%; }
-.cube-wrap { position: absolute; z-index: 9; left: 53%; top: 30%; width: 174px; height: 174px; transform: translate(-50%,-50%); perspective: 900px; }
+.cube-wrap { position: absolute; z-index: 9; left: 53%; top: 27.5%; width: 174px; height: 174px; transform: translate(-50%,-50%); perspective: 900px; }
 .cube { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transform: rotateX(-18deg) rotateY(28deg); }
 .cube-face { position: absolute; width: 174px; height: 174px; border: 1px solid rgba(255,177,140,.54); background: linear-gradient(145deg, rgba(255,75,11,.88), rgba(112,25,0,.82)); color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; backface-visibility: visible; box-shadow: inset 0 0 45px rgba(255,255,255,.07); }
 .cube-face::after { content: ""; position: absolute; inset: 9px; border: 1px solid rgba(255,255,255,.12); }
