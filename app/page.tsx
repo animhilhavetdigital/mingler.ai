@@ -1,9 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
+import { Navbar } from "@/components/nav/Navbar";
+import { DecisiveTest } from "@/components/sections/DecisiveTest";
+import { HdDataTimeline } from "@/components/sections/HdDataTimeline";
+import StellarCardGallerySingle from "@/components/ui/3d-image-gallery";
+import WaterRippleImage from "@/components/ui/water-ripple-image";
+import { SitePreloader } from "@/components/ui/SitePreloader";
 
 const ecosystem = [
   {
@@ -56,16 +62,7 @@ const agents = [
   { id: "performance", title: "Performance & Décision" },
 ];
 
-const hdDataFilters = ["Maroc", "Immobilier", "Dirigeants", "10–200 salariés"];
 
-const hdDataProfiles = [
-  { role: "Directrice commerciale", company: "Promotion immobilière", city: "Casablanca" },
-  { role: "Fondateur", company: "Gestion locative", city: "Rabat" },
-  { role: "Directeur général", company: "Construction B2B", city: "Tanger" },
-  { role: "Responsable acquisition", company: "PropTech", city: "Marrakech" },
-  { role: "Gérante", company: "Agence immobilière", city: "Agadir" },
-  { role: "Directeur développement", company: "Investissement", city: "Casablanca" },
-];
 
 const metrics = [
   ["+10K", "entreprises accompagnées"],
@@ -74,48 +71,12 @@ const metrics = [
   ["−70%", "temps de gestion"],
 ];
 
-const diagnosticQuestions = [
-  {
-    number: "01",
-    signal: "ORIGINE",
-    question: "Savez-vous exactement d’où viennent vos meilleurs clients ?",
-    insight: "Pas seulement le canal : la campagne, le message et le premier signal qui ont créé la relation.",
-  },
-  {
-    number: "02",
-    signal: "ACTION",
-    question: "Chaque prospect reçoit-il automatiquement la bonne action au bon moment ?",
-    insight: "Sans attendre qu’une personne rapproche manuellement les informations et décide de relancer.",
-  },
-  {
-    number: "03",
-    signal: "MÉMOIRE",
-    question: "Avez-vous une seule histoire client, ou des informations dispersées dans plusieurs outils ?",
-    insight: "Une histoire que marketing, vente et relation client peuvent reprendre sans la reconstruire.",
-  },
-  {
-    number: "04",
-    signal: "APPRENTISSAGE",
-    question: "Pouvez-vous expliquer pourquoi un client achète… ou abandonne ?",
-    insight: "Et transformer cette réponse en une prochaine décision plus précise pour toute l’équipe.",
-  },
-];
-
 function Arrow({ diagonal = false }: { diagonal?: boolean }) {
   return <span aria-hidden="true">{diagonal ? "↗" : "→"}</span>;
 }
 
 export default function Home() {
   const rootRef = useRef<HTMLElement>(null);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 30);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -139,78 +100,8 @@ export default function Home() {
     const context = gsap.context(() => {
       gsap.timeline({ delay: 1.05, defaults: { ease: "power4.out" } })
         .from(".site-header", { y: -90, opacity: 0, duration: 1 })
-        .from(".hero-reference-frame", { scale: 1.025, opacity: 0, filter: "blur(16px)", duration: 1.45 }, "-=.72");
-
       const desktop = gsap.matchMedia();
       desktop.add("(min-width: 900px)", () => {
-        const heroStory = gsap.timeline({
-          scrollTrigger: {
-            trigger: ".hero",
-            start: "top top",
-            end: "+=230%",
-            pin: true,
-            scrub: 1.15,
-            anticipatePin: 1,
-            invalidateOnRefresh: true,
-          },
-        });
-        heroStory
-          .fromTo(
-            ".hero-reference-image",
-            { scale: 1, xPercent: 0, yPercent: 0, opacity: 1, filter: "saturate(1) contrast(1) blur(0px)" },
-            { scale: 3.35, xPercent: -21.5, yPercent: 4.5, opacity: 1, filter: "saturate(1.2) contrast(1.08) blur(0px)", ease: "power2.inOut", duration: 0.72, immediateRender: true },
-            0,
-          )
-          .fromTo(".hero-zoom-vignette", { opacity: 0, scale: 0.82 }, { opacity: 1, scale: 1.12, duration: 0.58, immediateRender: true }, 0.08)
-          .to(".hero-mobile-copy, .scroll-cue", { opacity: 0, y: 28, duration: 0.24 }, 0.04)
-          .fromTo(".hero-transition-word", { opacity: 0, scale: 0.46 }, { opacity: 1, scale: 1, duration: 0.34, ease: "power3.out" }, 0.58)
-          .to(".hero-transition-word span", { letterSpacing: "0.015em", duration: 0.36 }, 0.62)
-          .to(".hero-reference-image", { scale: 4.15, opacity: 0.12, filter: "blur(8px) saturate(1.35)", duration: 0.28 }, 0.72)
-          .to(".hero-zoom-vignette", { backgroundColor: "rgba(5,4,3,.92)", duration: 0.26 }, 0.72)
-          .to(".hero-transition-word", { opacity: 0, scale: 1.2, duration: 0.2 }, 0.9);
-
-        const questionCards = gsap.utils.toArray<HTMLElement>(".diagnostic-question");
-        const diagnosticAnswer = document.querySelector<HTMLElement>(".diagnostic-answer");
-        const diagnosticCount = document.querySelector<HTMLElement>(".diagnostic-count");
-        const diagnosticDots = gsap.utils.toArray<HTMLElement>(".diagnostic-dots i");
-
-        gsap.set(questionCards, { autoAlpha: 0, yPercent: 46, rotateX: -12, scale: 0.9 });
-        gsap.set(questionCards[0], { autoAlpha: 1, yPercent: 0, rotateX: 0, scale: 1 });
-        gsap.set(diagnosticAnswer, { autoAlpha: 0, yPercent: 34, scale: 0.92 });
-
-        const setDiagnosticStep = (progress: number) => {
-          const step = Math.min(4, Math.floor(progress * 4.75));
-          if (diagnosticCount) diagnosticCount.textContent = String(Math.min(step + 1, 4)).padStart(2, "0");
-          diagnosticDots.forEach((dot, index) => dot.classList.toggle("is-active", index <= Math.min(step, 3)));
-        };
-
-        const diagnosticStory = gsap.timeline({
-          scrollTrigger: {
-            trigger: ".diagnostic-section",
-            start: "top top",
-            end: "+=420%",
-            pin: ".diagnostic-pin",
-            scrub: 1.05,
-            anticipatePin: 1,
-            onUpdate: (self) => setDiagnosticStep(self.progress),
-          },
-        });
-
-        questionCards.forEach((card, index) => {
-          if (index === 0) return;
-          const previous = questionCards[index - 1];
-          const position = index * 0.82;
-          diagnosticStory
-            .to(previous, { autoAlpha: 0, yPercent: -38, rotateX: 10, scale: 0.91, duration: 0.24 }, position - 0.18)
-            .to(card, { autoAlpha: 1, yPercent: 0, rotateX: 0, scale: 1, duration: 0.34, ease: "power3.out" }, position);
-        });
-
-        diagnosticStory
-          .to(questionCards[questionCards.length - 1], { autoAlpha: 0, yPercent: -38, rotateX: 10, scale: 0.91, duration: 0.25 }, 3.12)
-          .to(".diagnostic-head", { opacity: 0.32, yPercent: -8, duration: 0.28 }, 3.12)
-          .to(diagnosticAnswer, { autoAlpha: 1, yPercent: 0, scale: 1, duration: 0.42, ease: "power3.out" }, 3.3)
-          .fromTo(".diagnostic-answer-line i", { scaleX: 0 }, { scaleX: 1, transformOrigin: "left center", duration: 0.36 }, 3.38)
-          .from(".diagnostic-answer p, .diagnostic-answer a", { y: 24, opacity: 0, stagger: 0.08, duration: 0.28 }, 3.46);
 
         const hdStage = document.querySelector<HTMLElement>(".hd-stage-current");
         const hdSteps = gsap.utils.toArray<HTMLElement>(".hd-step-progress i");
@@ -343,6 +234,70 @@ export default function Home() {
           .to(".flow-legend", { autoAlpha: 1, y: 0, duration: 0.24 }, 5.34)
           .to(".agent-orchestrator", { boxShadow: "0 0 80px rgba(255,75,11,.48)", duration: 0.34 }, 5.36);
 
+        // MOS Section Scroll Entry & Animated Text Reveal
+        gsap.from(".mos-kicker", {
+          scrollTrigger: {
+            trigger: ".mos-intro",
+            start: "top 82%",
+            toggleActions: "play none none reverse",
+          },
+          autoAlpha: 0,
+          y: 24,
+          duration: 0.7,
+          ease: "power3.out",
+        });
+
+        gsap.from(".mos-title", {
+          scrollTrigger: {
+            trigger: ".mos-intro",
+            start: "top 80%",
+            toggleActions: "play none none reverse",
+          },
+          autoAlpha: 0,
+          y: 40,
+          duration: 0.9,
+          ease: "power3.out",
+        });
+
+        gsap.from(".mos-desc", {
+          scrollTrigger: {
+            trigger: ".mos-intro",
+            start: "top 76%",
+            toggleActions: "play none none reverse",
+          },
+          autoAlpha: 0,
+          y: 30,
+          duration: 0.8,
+          delay: 0.15,
+          ease: "power3.out",
+        });
+
+        gsap.from(".mos-cta", {
+          scrollTrigger: {
+            trigger: ".mos-intro",
+            start: "top 72%",
+            toggleActions: "play none none reverse",
+          },
+          autoAlpha: 0,
+          x: -25,
+          duration: 0.7,
+          delay: 0.3,
+          ease: "power3.out",
+        });
+
+        gsap.from(".mos-intro-right", {
+          scrollTrigger: {
+            trigger: ".mos-intro",
+            start: "top 78%",
+            toggleActions: "play none none reverse",
+          },
+          autoAlpha: 0,
+          scale: 0.92,
+          y: 45,
+          duration: 1.1,
+          ease: "power3.out",
+        });
+
         const iacrmStory = gsap.timeline({
           scrollTrigger: {
             trigger: ".iacrm-section",
@@ -429,228 +384,55 @@ export default function Home() {
 
   return (
     <main ref={rootRef}>
-      <div className="intro-curtain" aria-hidden="true">
-        <div><span className="brand-mark" /><strong>MINGLER</strong></div>
-        <i />
-        <small>RELIONS LES SIGNAUX</small>
-      </div>
+      <SitePreloader />
       <div className="scroll-progress" aria-hidden="true"><i /></div>
-      <header className={`site-header ${scrolled ? "is-scrolled" : ""}`}>
-        <a className="brand" href="#top" aria-label="Mingler — accueil">
-          <span className="brand-mark" aria-hidden="true" />
-          <span>mingler</span><b>.ai</b>
-        </a>
-        <nav className={menuOpen ? "nav-open" : ""} aria-label="Navigation principale">
-          <a href="#diagnostic" onClick={() => setMenuOpen(false)}>Diagnostic</a>
-          <a href="#hd-data" onClick={() => setMenuOpen(false)}>HD Data</a>
-          <a href="#mos" onClick={() => setMenuOpen(false)}>MOS</a>
-          <a href="#iacrm" onClick={() => setMenuOpen(false)}>iACRM</a>
-          <a href="#produits" onClick={() => setMenuOpen(false)}>Produits</a>
-          <a href="#impact" onClick={() => setMenuOpen(false)}>Impact</a>
-        </nav>
-        <a className="header-cta" href="#contact">Demander une démo <Arrow diagonal /></a>
-        <button
-          className="menu-button"
-          type="button"
-          aria-label="Ouvrir le menu"
-          aria-expanded={menuOpen}
-          onClick={() => setMenuOpen((value) => !value)}
-        >
-          <span /><span />
-        </button>
-      </header>
+      <Navbar />
 
-      <section className="hero" id="top" aria-labelledby="hero-title">
-        <h1 className="hero-accessible-title" id="hero-title">MINGLER — Chaque signal devient une action.</h1>
-        <div className="hero-reference-frame" aria-hidden="true">
-          <img className="hero-reference-image" src="/mingler-hero-network-v2.png" alt="" />
-          <div className="hero-zoom-vignette" />
-        </div>
-        <div className="hero-mobile-copy">
-          <strong>MINGLER</strong>
-          <p>Chaque signal devient une <em>action.</em></p>
-        </div>
-        <div className="hero-transition-word" aria-hidden="true"><small>UNE MÉMOIRE.</small><span>TOUT EST RELIÉ</span></div>
-        <a className="scroll-cue" href="#diagnostic"><span /> Entrer dans Mingler</a>
-      </section>
-
-      <section className="diagnostic-section" id="diagnostic" aria-labelledby="diagnostic-title">
-        <div className="diagnostic-pin">
-          <div className="diagnostic-grid" aria-hidden="true" />
-          <div className="diagnostic-head">
-            <div className="section-kicker light"><span>A</span> Le test décisif</div>
-            <p className="diagnostic-index">QUESTION <strong className="diagnostic-count">01</strong><i>/04</i></p>
-            <h2 id="diagnostic-title">Pouvez-vous répondre<br /><em>immédiatement ?</em></h2>
-            <p>Répondez mentalement. Si la réponse demande plusieurs outils, plusieurs personnes ou plusieurs minutes, continuez à faire défiler.</p>
-            <div className="diagnostic-dots" aria-hidden="true">
-              {diagnosticQuestions.map(({ number }) => <i key={number} className={number === "01" ? "is-active" : ""} />)}
-            </div>
-          </div>
-
-          <div className="diagnostic-stage">
-            {diagnosticQuestions.map(({ number, signal, question, insight }) => (
-              <article className="diagnostic-question" key={number}>
-                <div className="question-meta"><span>{number}</span><b>{signal}</b></div>
-                <h3>{question}</h3>
-                <p>{insight}</p>
-                <i className="question-corner" aria-hidden="true" />
-              </article>
-            ))}
-
-            <article className="diagnostic-answer">
-              <span>CE QUE VOS RÉPONSES RÉVÈLENT</span>
-              <h3>Vous n’avez pas quatre problèmes.<br /><em>Vous avez une histoire client fragmentée.</em></h3>
-              <div className="diagnostic-answer-line"><i /></div>
-              <p>Ce n’est pas un manque d’effort de vos équipes. C’est le manque de continuité entre ce que votre entreprise sait, ce qu’elle fait et ce qu’elle apprend.</p>
-              <a href="#hd-data">Découvrir HD Data <Arrow /></a>
-            </article>
-          </div>
-
-          <p className="diagnostic-scroll" aria-hidden="true"><span /> CONTINUEZ À DÉFILER</p>
+      <section id="top" className="relative w-full h-[250vh]">
+        <div className="sticky top-0 left-0 w-full h-screen overflow-hidden">
+          <StellarCardGallerySingle />
         </div>
       </section>
 
-      <section className="hd-data-section" id="hd-data" aria-labelledby="hd-data-title">
-        <div className="hd-data-sticky">
-          <div className="hd-data-grid" aria-hidden="true" />
-          <div className="hd-data-console">
-            <span><i /> HD DATA / BASE ACTIVE</span>
-            <span>ÉTAPE <strong className="hd-stage-current">01</strong><b>/05</b></span>
-          </div>
+      <DecisiveTest />
 
-          <div className="hd-data-scene">
-            <div className="hd-copy-stack">
-              <article className="hd-copy hd-copy-1">
-                <small>02 / HD DATA</small>
-                <h2 id="hd-data-title">20 millions de profils.<br /><em>Votre cible est ici.</em></h2>
-                <p>Explorez une base B2B massive sans acheter une liste au hasard.</p>
-              </article>
-              <article className="hd-copy hd-copy-2">
-                <small>CIBLAGE EN DIRECT</small>
-                <h3>Décrivez votre audience.<br /><em>La base se resserre.</em></h3>
-                <p>Localisation, secteur, fonction et taille d’entreprise isolent les profils utiles.</p>
-              </article>
-              <article className="hd-copy hd-copy-3">
-                <small>AUDIENCE IDENTIFIÉE</small>
-                <h3>12 648 profils.<br /><em>Pas une liste au hasard.</em></h3>
-                <p>Prévisualisez la composition de votre audience avant de la déverrouiller.</p>
-              </article>
-              <article className="hd-copy hd-copy-4">
-                <small>ACHAT À LA CARTE</small>
-                <h3>Votre sélection devient<br /><em>un Data Pack.</em></h3>
-                <p>Achetez uniquement les données dont votre prochaine action a besoin.</p>
-              </article>
-              <article className="hd-copy hd-copy-5">
-                <small>ACTIVATION IMMÉDIATE</small>
-                <h3>Une audience.<br /><em>Deux chemins directs.</em></h3>
-                <p>Injectez le Data Pack dans iACRM ou lancez une campagne avec ReelSend.</p>
-                <a className="hd-final-cta" href="#contact">Construire une audience <Arrow diagonal /></a>
-              </article>
-            </div>
-
-            <div className="hd-data-visual" aria-label="Une base de vingt millions de profils se filtre puis devient un Data Pack activable">
-              <div className="hd-particle-field" aria-hidden="true">
-                {Array.from({ length: 108 }, (_, index) => (
-                  <i className={`hd-particle${index % 8 === 0 ? " is-selected" : ""}`} key={index} />
-                ))}
-              </div>
-
-              <div className="hd-lens" aria-hidden="true">
-                <i className="hd-lens-ring hd-lens-ring-1" />
-                <i className="hd-lens-ring hd-lens-ring-2" />
-                <i className="hd-lens-ring hd-lens-ring-3" />
-                <span /><b />
-              </div>
-
-              <div className="hd-data-number">
-                <strong>20M<sup>+</sup></strong>
-                <span>PROFILS B2B DISPONIBLES</span>
-              </div>
-
-              <aside className="hd-filter-panel" aria-label="Critères de ciblage">
-                <span>VOTRE AUDIENCE</span>
-                {hdDataFilters.map((filter, index) => (
-                  <div className="hd-filter-chip" key={filter}><small>0{index + 1}</small><strong>{filter}</strong><i>×</i></div>
-                ))}
-              </aside>
-
-              <div className="hd-result-count" aria-live="polite">
-                <small>PROFILS CORRESPONDANTS</small>
-                <div>
-                  <strong className="hd-result-value hd-result-value-1">20 000 000</strong>
-                  <strong className="hd-result-value hd-result-value-2">1 284 760</strong>
-                  <strong className="hd-result-value hd-result-value-3">184 320</strong>
-                  <strong className="hd-result-value hd-result-value-4">12 648</strong>
-                </div>
-              </div>
-
-              <div className="hd-profile-stage">
-                {hdDataProfiles.map(({ role, company, city }, index) => (
-                  <article className={`hd-profile-card hd-profile-card-${index + 1}`} key={role}>
-                    <small>PROFIL {String(index + 1).padStart(2, "0")}</small>
-                    <strong>{role}</strong>
-                    <span>{company}<br />{city}</span>
-                    <i>DONNÉES VERROUILLÉES</i>
-                  </article>
-                ))}
-              </div>
-
-              <div className="hd-data-pack-shell">
-                <div className="hd-data-pack">
-                  <i className="hd-pack-top" aria-hidden="true" />
-                  <i className="hd-pack-side" aria-hidden="true" />
-                  <small>HD DATA / PACK PRÊT</small>
-                  <strong>12 648</strong>
-                  <span>profils sélectionnés</span>
-                  <div><i className="hd-pack-row" /><i className="hd-pack-row" /><i className="hd-pack-row" /><i className="hd-pack-row" /></div>
-                  <b>ACHETÉ · CHIFFRÉ · ACTIVABLE</b>
-                </div>
-              </div>
-
-              <div className="hd-route-stage">
-                <div className="hd-route-network" aria-hidden="true">
-                  <i className="hd-route-segment hd-route-x hd-route-trunk" />
-                  <i className="hd-route-segment hd-route-y hd-route-spine" />
-                  <i className="hd-route-segment hd-route-x hd-route-arm hd-route-arm-iacrm" />
-                  <i className="hd-route-segment hd-route-x hd-route-arm hd-route-arm-reelsend" />
-                  <b className="hd-route-junction" />
-                  <b className="hd-route-pulse hd-route-pulse-source" />
-                  <b className="hd-route-pulse hd-route-pulse-iacrm" />
-                  <b className="hd-route-pulse hd-route-pulse-reelsend" />
-                </div>
-                <article className="hd-destination hd-destination-iacrm">
-                  <small>IMPORTER DANS</small><strong>iACRM</strong><span>Qualifier · scorer · suivre</span>
-                </article>
-                <article className="hd-destination hd-destination-reelsend">
-                  <small>ENVOYER AVEC</small><strong>ReelSend</strong><span>Personnaliser · diffuser · mesurer</span>
-                </article>
-                <a className="hd-mobile-cta" href="#contact">Construire une audience <Arrow diagonal /></a>
-              </div>
-            </div>
-          </div>
-
-          <div className="hd-step-progress" aria-hidden="true">
-            {Array.from({ length: 5 }, (_, index) => <i className={index === 0 ? "is-active" : ""} key={index} />)}
-          </div>
-        </div>
-      </section>
+      <HdDataTimeline />
 
       <div className="motion-marquee" aria-hidden="true">
         <div className="marquee-track">
+          <span>ACQUÉRIR</span><i>✦</i><span>COMPRENDRE</span><i>✦</i><span>ACTIVER</span><i>✦</i><span>MESURER</span><i>✦</i>
+          <span>ACQUÉRIR</span><i>✦</i><span>COMPRENDRE</span><i>✦</i><span>ACTIVER</span><i>✦</i><span>MESURER</span><i>✦</i>
           <span>ACQUÉRIR</span><i>✦</i><span>COMPRENDRE</span><i>✦</i><span>ACTIVER</span><i>✦</i><span>MESURER</span><i>✦</i>
           <span>ACQUÉRIR</span><i>✦</i><span>COMPRENDRE</span><i>✦</i><span>ACTIVER</span><i>✦</i><span>MESURER</span><i>✦</i>
         </div>
       </div>
 
       <section className="mos-section" id="mos">
-        <div className="mos-intro">
-          <div className="section-kicker"><span>03</span> MOS Marketing</div>
-          <div className="mos-heading gsap-reveal">
-            <h2>Votre marketing<br /><span>prend vie.</span></h2>
-            <div>
-              <p>Neuf agents spécialisés transforment chaque signal marché en stratégie, contenus, diffusion et décisions mesurables.</p>
-              <a href="#contact">Découvrir le MOS <Arrow /></a>
+        <div className="mos-intro grid grid-cols-1 lg:grid-cols-[1fr_1.25fr] gap-12 lg:gap-16 items-center py-20 px-6 sm:px-12 lg:px-20 w-full max-w-[1800px] mx-auto">
+          <div className="flex flex-col justify-center max-w-2xl">
+            <div className="section-kicker mos-kicker">MOS Marketing</div>
+            <div className="mos-heading mt-4">
+              <h2 className="mos-title">Votre marketing<br /><span className="text-[#ff4b0b]">prend vie.</span></h2>
+              <div className="mt-4">
+                <p className="mos-desc text-base sm:text-lg text-neutral-600 max-w-lg leading-relaxed">
+                  Neuf agents spécialisés transforment<br />
+                  chaque signal marché en stratégie, contenus,<br />
+                  diffusion et décisions mesurables.
+                </p>
+                <a href="#contact" className="mos-cta mt-6 inline-flex items-center gap-3 text-[#ff4b0b] font-extrabold border-b-2 border-[#ff4b0b] pb-1 hover:opacity-80 transition-opacity">Découvrir le MOS <Arrow /></a>
+              </div>
             </div>
+          </div>
+
+          <div className="mos-intro-right w-full h-[600px] lg:h-[780px]">
+            <WaterRippleImage
+              blueish={0.35}
+              scale={6.5}
+              illumination={0.16}
+              surfaceDistortion={0.04}
+              waterDistortion={0.025}
+              src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=1400"
+            />
           </div>
         </div>
 
